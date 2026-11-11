@@ -1,0 +1,522 @@
+{
+ "NIFTY|orb": {
+  "params": {
+   "orb": 30,
+   "rr": 3,
+   "max_range": 0.006,
+   "itm": 1
+  },
+  "train": {
+   "n": 573,
+   "win": 34.7,
+   "pf": 0.78,
+   "net": -197143.0,
+   "avg": -344.0,
+   "max_dd": 205538.0,
+   "worst": -5532.0,
+   "best": 15528.0,
+   "lose_streak": 11,
+   "per_month": 15.9
+  },
+  "test": {
+   "n": 329,
+   "win": 38.0,
+   "pf": 0.72,
+   "net": -167458.0,
+   "avg": -509.0,
+   "max_dd": 195451.0,
+   "worst": -6945.0,
+   "best": 16423.0,
+   "lose_streak": 11,
+   "per_month": 14.9
+  }
+ },
+ "NIFTY|supertrend": {
+  "params": {
+   "tf": 15,
+   "mult": 3.0,
+   "ema": 50,
+   "rr": 3,
+   "itm": 1
+  },
+  "train": {
+   "n": 197,
+   "win": 39.1,
+   "pf": 1.14,
+   "net": 38727.0,
+   "avg": 197.0,
+   "max_dd": 32064.0,
+   "worst": -7910.0,
+   "best": 17286.0,
+   "lose_streak": 10,
+   "per_month": 5.5
+  },
+  "test": {
+   "n": 122,
+   "win": 35.2,
+   "pf": 0.7,
+   "net": -65308.0,
+   "avg": -535.0,
+   "max_dd": 76949.0,
+   "worst": -8653.0,
+   "best": 19215.0,
+   "lose_streak": 8,
+   "per_month": 5.6
+  }
+ },
+ "NIFTY|pullback": {
+  "params": {
+   "tf": 15,
+   "rr": 3,
+   "atr_k": 1.5,
+   "itm": 1
+  },
+  "train": {
+   "n": 280,
+   "win": 33.6,
+   "pf": 0.8,
+   "net": -76853.0,
+   "avg": -274.0,
+   "max_dd": 126680.0,
+   "worst": -5730.0,
+   "best": 14187.0,
+   "lose_streak": 22,
+   "per_month": 7.8
+  },
+  "test": {
+   "n": 181,
+   "win": 27.6,
+   "pf": 0.53,
+   "net": -146786.0,
+   "avg": -811.0,
+   "max_dd": 156817.0,
+   "worst": -6296.0,
+   "best": 13360.0,
+   "lose_streak": 17,
+   "per_month": 8.3
+  }
+ },
+ "NIFTY|straddle": {
+  "params": {
+   "entry_hm": 920,
+   "sl": 0.8,
+   "wing": 10,
+   "days": "expiry",
+   "max_dte": 7
+  },
+  "train": {
+   "n": 151,
+   "win": 60.3,
+   "pf": 2.08,
+   "net": 120111.0,
+   "avg": 795.0,
+   "max_dd": 14081.0,
+   "worst": -9972.0,
+   "best": 7661.0,
+   "lose_streak": 4,
+   "per_month": 4.3
+  },
+  "test": {
+   "n": 101,
+   "win": 62.4,
+   "pf": 1.44,
+   "net": 52582.0,
+   "avg": 521.0,
+   "max_dd": 26726.0,
+   "worst": -13967.0,
+   "best": 9194.0,
+   "lose_streak": 4,
+   "per_month": 4.5
+  }
+ },
+ "BANKNIFTY|orb": {
+  "params": {
+   "orb": 15,
+   "rr": 2,
+   "max_range": 0.006,
+   "itm": 1
+  },
+  "train": {
+   "n": 520,
+   "win": 32.7,
+   "pf": 0.75,
+   "net": -262162.0,
+   "avg": -504.0,
+   "max_dd": 311558.0,
+   "worst": -7252.0,
+   "best": 14105.0,
+   "lose_streak": 11,
+   "per_month": 14.5
+  },
+  "test": {
+   "n": 319,
+   "win": 33.2,
+   "pf": 0.56,
+   "net": -310489.0,
+   "avg": -973.0,
+   "max_dd": 324410.0,
+   "worst": -6963.0,
+   "best": 12545.0,
+   "lose_streak": 10,
+   "per_month": 14.4
+  }
+ },
+ "BANKNIFTY|supertrend": {
+  "params": {
+   "tf": 15,
+   "mult": 3.0,
+   "ema": 50,
+   "rr": null,
+   "itm": 1
+  },
+  "train": {
+   "n": 193,
+   "win": 43.5,
+   "pf": 0.99,
+   "net": -3509.0,
+   "avg": -18.0,
+   "max_dd": 71511.0,
+   "worst": -8559.0,
+   "best": 22058.0,
+   "lose_streak": 10,
+   "per_month": 5.4
+  },
+  "test": {
+   "n": 144,
+   "win": 34.7,
+   "pf": 0.53,
+   "net": -134151.0,
+   "avg": -932.0,
+   "max_dd": 154505.0,
+   "worst": -9549.0,
+   "best": 11404.0,
+   "lose_streak": 14,
+   "per_month": 6.6
+  }
+ },
+ "BANKNIFTY|pullback": {
+  "params": {
+   "tf": 60,
+   "rr": 3,
+   "atr_k": 1.0,
+   "itm": 1
+  },
+  "train": {
+   "n": 64,
+   "win": 45.3,
+   "pf": 1.3,
+   "net": 27333.0,
+   "avg": 427.0,
+   "max_dd": 44866.0,
+   "worst": -5469.0,
+   "best": 29800.0,
+   "lose_streak": 7,
+   "per_month": 1.8
+  },
+  "test": {
+   "n": 54,
+   "win": 38.9,
+   "pf": 0.51,
+   "net": -54248.0,
+   "avg": -1005.0,
+   "max_dd": 58258.0,
+   "worst": -8428.0,
+   "best": 8846.0,
+   "lose_streak": 5,
+   "per_month": 2.5
+  }
+ },
+ "BANKNIFTY|straddle": {
+  "params": {
+   "entry_hm": 1000,
+   "sl": 1.0,
+   "wing": 10,
+   "days": "expiry",
+   "max_dte": 7
+  },
+  "train": {
+   "n": 155,
+   "win": 51.6,
+   "pf": 2.47,
+   "net": 213670.0,
+   "avg": 1379.0,
+   "max_dd": 17076.0,
+   "worst": -12075.0,
+   "best": 10341.0,
+   "lose_streak": 6,
+   "per_month": 4.5
+  },
+  "test": {
+   "n": 29,
+   "win": 58.6,
+   "pf": 3.48,
+   "net": 61599.0,
+   "avg": 2124.0,
+   "max_dd": 10464.0,
+   "worst": -4657.0,
+   "best": 8901.0,
+   "lose_streak": 5,
+   "per_month": 1.4
+  }
+ },
+ "SENSEX|orb": {
+  "params": {
+   "orb": 30,
+   "rr": null,
+   "max_range": 0.006,
+   "itm": 1
+  },
+  "train": {
+   "n": 550,
+   "win": 36.4,
+   "pf": 0.75,
+   "net": -220873.0,
+   "avg": -402.0,
+   "max_dd": 226650.0,
+   "worst": -9382.0,
+   "best": 20675.0,
+   "lose_streak": 13,
+   "per_month": 15.3
+  },
+  "test": {
+   "n": 320,
+   "win": 34.7,
+   "pf": 0.63,
+   "net": -208923.0,
+   "avg": -653.0,
+   "max_dd": 242384.0,
+   "worst": -5993.0,
+   "best": 20166.0,
+   "lose_streak": 13,
+   "per_month": 14.4
+  }
+ },
+ "SENSEX|supertrend": {
+  "params": {
+   "tf": 15,
+   "mult": 3.0,
+   "ema": 50,
+   "rr": null,
+   "itm": 1
+  },
+  "train": {
+   "n": 193,
+   "win": 34.2,
+   "pf": 0.76,
+   "net": -83077.0,
+   "avg": -430.0,
+   "max_dd": 105616.0,
+   "worst": -7347.0,
+   "best": 12722.0,
+   "lose_streak": 10,
+   "per_month": 5.4
+  },
+  "test": {
+   "n": 122,
+   "win": 30.3,
+   "pf": 0.62,
+   "net": -80163.0,
+   "avg": -657.0,
+   "max_dd": 84138.0,
+   "worst": -8659.0,
+   "best": 16173.0,
+   "lose_streak": 12,
+   "per_month": 5.6
+  }
+ },
+ "SENSEX|pullback": {
+  "params": {
+   "tf": 15,
+   "rr": 3,
+   "atr_k": 1.0,
+   "itm": 1
+  },
+  "train": {
+   "n": 296,
+   "win": 30.1,
+   "pf": 0.69,
+   "net": -117819.0,
+   "avg": -398.0,
+   "max_dd": 149792.0,
+   "worst": -4892.0,
+   "best": 7206.0,
+   "lose_streak": 29,
+   "per_month": 8.3
+  },
+  "test": {
+   "n": 194,
+   "win": 24.2,
+   "pf": 0.56,
+   "net": -114964.0,
+   "avg": -593.0,
+   "max_dd": 123529.0,
+   "worst": -4351.0,
+   "best": 7454.0,
+   "lose_streak": 23,
+   "per_month": 8.9
+  }
+ },
+ "SENSEX|straddle": {
+  "params": {
+   "entry_hm": 1000,
+   "sl": 0.6,
+   "wing": 6,
+   "days": "expiry",
+   "max_dte": 7
+  },
+  "train": {
+   "n": 80,
+   "win": 75.0,
+   "pf": 2.43,
+   "net": 70665.0,
+   "avg": 883.0,
+   "max_dd": 15868.0,
+   "worst": -7739.0,
+   "best": 5475.0,
+   "lose_streak": 3,
+   "per_month": 4.1
+  },
+  "test": {
+   "n": 91,
+   "win": 72.5,
+   "pf": 1.56,
+   "net": 47287.0,
+   "avg": 520.0,
+   "max_dd": 19528.0,
+   "worst": -9367.0,
+   "best": 5493.0,
+   "lose_streak": 4,
+   "per_month": 4.1
+  }
+ },
+ "MIDCPNIFTY|orb": {
+  "params": {
+   "orb": 30,
+   "rr": 2,
+   "max_range": 0.01,
+   "itm": 1
+  },
+  "train": {
+   "n": 519,
+   "win": 37.2,
+   "pf": 0.75,
+   "net": -218455.0,
+   "avg": -421.0,
+   "max_dd": 218455.0,
+   "worst": -8117.0,
+   "best": 21154.0,
+   "lose_streak": 10,
+   "per_month": 15.6
+  },
+  "test": {
+   "n": 313,
+   "win": 38.7,
+   "pf": 0.62,
+   "net": -316713.0,
+   "avg": -1012.0,
+   "max_dd": 354141.0,
+   "worst": -12381.0,
+   "best": 19771.0,
+   "lose_streak": 11,
+   "per_month": 14.1
+  }
+ },
+ "MIDCPNIFTY|supertrend": {
+  "params": {
+   "tf": 15,
+   "mult": 2.0,
+   "ema": 50,
+   "rr": 3,
+   "itm": 1
+  },
+  "train": {
+   "n": 226,
+   "win": 39.8,
+   "pf": 1.1,
+   "net": 30649.0,
+   "avg": 136.0,
+   "max_dd": 47800.0,
+   "worst": -7794.0,
+   "best": 22805.0,
+   "lose_streak": 6,
+   "per_month": 6.8
+  },
+  "test": {
+   "n": 172,
+   "win": 37.8,
+   "pf": 0.84,
+   "net": -53189.0,
+   "avg": -309.0,
+   "max_dd": 81667.0,
+   "worst": -7601.0,
+   "best": 30544.0,
+   "lose_streak": 16,
+   "per_month": 7.8
+  }
+ },
+ "MIDCPNIFTY|pullback": {
+  "params": {
+   "tf": 60,
+   "rr": 2,
+   "atr_k": 1.0,
+   "itm": 1
+  },
+  "train": {
+   "n": 74,
+   "win": 54.1,
+   "pf": 1.57,
+   "net": 56536.0,
+   "avg": 764.0,
+   "max_dd": 15459.0,
+   "worst": -5348.0,
+   "best": 13421.0,
+   "lose_streak": 4,
+   "per_month": 2.3
+  },
+  "test": {
+   "n": 63,
+   "win": 36.5,
+   "pf": 0.8,
+   "net": -26104.0,
+   "avg": -414.0,
+   "max_dd": 40752.0,
+   "worst": -7146.0,
+   "best": 12767.0,
+   "lose_streak": 7,
+   "per_month": 2.9
+  }
+ },
+ "MIDCPNIFTY|straddle": {
+  "params": {
+   "entry_hm": 1000,
+   "sl": 1.0,
+   "wing": 10,
+   "days": "expiry",
+   "max_dte": 7
+  },
+  "train": {
+   "n": 149,
+   "win": 67.8,
+   "pf": 4.75,
+   "net": 359571.0,
+   "avg": 2413.0,
+   "max_dd": 15219.0,
+   "worst": -14211.0,
+   "best": 9518.0,
+   "lose_streak": 4,
+   "per_month": 4.5
+  },
+  "test": {
+   "n": 24,
+   "win": 70.8,
+   "pf": 2.23,
+   "net": 38675.0,
+   "avg": 1611.0,
+   "max_dd": 12526.0,
+   "worst": -10371.0,
+   "best": 9683.0,
+   "lose_streak": 2,
+   "per_month": 1.1
+  }
+ }
+}

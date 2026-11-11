@@ -1,0 +1,20 @@
+[
+ {"id": "nifty-expiry", "index": "NIFTY", "family": "straddle", "label": "Nifty · expiry day",
+  "params": {"entry_hm": 1000, "sl": 0.8, "wing": 10, "days": "expiry", "max_dte": 7},
+  "note": "Weekly expiry (Tuesday). Best-tested and checked against real NSE expiry-day prices."},
+ {"id": "nifty-daily", "index": "NIFTY", "family": "straddle", "label": "Nifty · every day",
+  "params": {"entry_hm": 1000, "sl": 1.0, "wing": 10, "days": "all", "max_dte": 7},
+  "note": "Same trade on every day of the weekly cycle: more trades, relies more on the model's intraday decay."},
+ {"id": "sensex-expiry", "index": "SENSEX", "family": "straddle", "label": "Sensex · expiry day",
+  "params": {"entry_hm": 1000, "sl": 0.6, "wing": 10, "days": "expiry", "max_dte": 7},
+  "note": "Weekly expiry (Thursday, BSE)."},
+ {"id": "sensex-daily", "index": "SENSEX", "family": "straddle", "label": "Sensex · every day",
+  "params": {"entry_hm": 1000, "sl": 0.8, "wing": 10, "days": "all", "max_dte": 7},
+  "note": "Every day of the weekly cycle."},
+ {"id": "banknifty-expiry", "index": "BANKNIFTY", "family": "straddle", "label": "Bank Nifty · expiry day",
+  "params": {"entry_hm": 1000, "sl": 1.0, "wing": 10, "days": "expiry", "max_dte": 7},
+  "note": "Monthly expiry only since Nov 2024: about one trade a month."},
+ {"id": "midcpnifty-expiry", "index": "MIDCPNIFTY", "family": "straddle", "label": "Midcap Nifty · expiry day",
+  "params": {"entry_hm": 1000, "sl": 1.0, "wing": 10, "days": "expiry", "max_dte": 7},
+  "note": "Monthly expiry only: about one trade a month. Thinner market, wider real spreads."}
+]

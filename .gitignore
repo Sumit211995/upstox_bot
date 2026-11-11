@@ -1,0 +1,19 @@
+# secrets - NEVER commit
+.env
+*.env
+!.env.example
+
+# runtime data
+state/
+logs/
+data/
+research/out_run.log
+
+# python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+docs/guide.html

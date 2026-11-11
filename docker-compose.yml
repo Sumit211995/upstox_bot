@@ -1,0 +1,21 @@
+services:
+  upstox-bot:                      # paper trading only: reads public prices, never sends orders
+    build: .
+    env_file: .env
+    restart: unless-stopped
+    volumes:
+      - ./state:/app/state
+      - ./logs:/app/logs
+      - ./data:/app/data
+
+  upstox-dashboard:                # read-only web page; reachable only from the server itself (or Tailscale)
+    build: .
+    env_file: .env
+    restart: unless-stopped
+    command: ["python", "dashboard.py", "--host", "0.0.0.0", "--port", "8002"]
+    ports:
+      - "127.0.0.1:8002:8002"
+    volumes:
+      - ./state:/app/state
+      - ./logs:/app/logs
+      - ./data:/app/data
