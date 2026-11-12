@@ -348,6 +348,71 @@ footer .sig b { color: var(--accent); font-weight: 700; }
   .matrix { grid-template-columns: minmax(0, 1fr); } .mh { display: none; } .msym { margin-top: 8px; flex-direction: row; gap: 8px; align-items: baseline; }
   #chart { height: 320px; } .tick .px { font-size: 22px; } .topbar .sub { display: none; } .spark { display: none; }
 }
+
+/* ---------- option buying + OI scanner ---------- */
+.plan { margin-top: 12px; padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--border-2); background: var(--surface); font-size: 13px; }
+.plan b.k { font-size: 11px; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; display: block; margin-bottom: 3px; }
+.plan .why { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.btpills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.btpills span { white-space: normal; font-size: 11px; padding: 3px 8px; border-radius: 7px; background: var(--surface-3); color: var(--text-2); }
+.btpills span.g { background: var(--up-soft); color: var(--up); } .btpills span.r { background: var(--down-soft); color: var(--down); }
+.book .note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+.scan-grid { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 1100px) { .scan-grid { grid-template-columns: minmax(0, 1fr); } }
+#sTbl tbody tr { cursor: pointer; } #sTbl tbody tr.on td { background: var(--surface-2); }
+.oibar { display: inline-flex; width: 90px; height: 6px; border-radius: 4px; overflow: hidden; vertical-align: middle; margin-right: 6px; background: var(--down-soft); }
+.oibar i { display: block; height: 100%; background: var(--up); }
+.sig { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
+.sig.ce { color: var(--up); background: var(--up-soft); } .sig.pe { color: var(--down); background: var(--down-soft); }
+.fii { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.fii div { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 12px; color: var(--muted); }
+.fii b { display: block; color: var(--text); font-size: 15px; margin-top: 2px; }
+.newsbox { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; min-width: 0; }
+.newsbox h3 { font-size: 13px; margin: 0 0 8px; display: flex; gap: 8px; align-items: center; }
+.newsbox ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 520px; overflow-y: auto; }
+.newsbox li { font-size: 13px; line-height: 1.4; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+.newsbox li a { color: var(--text); text-decoration: none; } .newsbox li a:hover { text-decoration: underline; }
+.newsbox li small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+.mood { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: var(--surface-3); color: var(--text-2); }
+.mood.positive { color: var(--up); background: var(--up-soft); } .mood.negative { color: var(--down); background: var(--down-soft); }
+
+/* ---------- signal strip (top) ---------- */
+.sigstrip { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 12px; overflow-x: auto; margin-top: 16px; padding-bottom: 4px; scroll-snap-type: x proximity; }
+.scard { scroll-snap-align: start; padding: 12px 14px; cursor: pointer; border-left: 3px solid var(--border-2); min-width: 0; }
+.scard.buy { border-left-color: var(--up); } .scard.sell { border-left-color: var(--down); } .scard.hold { border-left-color: var(--warn); } .scard.wait { border-left-color: var(--border-2); }
+.scard .t1 { display: flex; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .3px; }
+.scard .t2 { font-weight: 700; font-size: 14px; margin: 5px 0 3px; line-height: 1.35; }
+.scard .t3 { font-size: 12px; color: var(--text-2); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.striplbl { margin-top: 16px; font-size: 12px; font-weight: 700; color: var(--text-2); letter-spacing: .3px; } .striplbl .sub { font-weight: 500; margin-left: 6px; }
+.sigstrip + .striplbl { margin-top: 12px; } .striplbl + .sigstrip { margin-top: 6px; }
+.tag { white-space: nowrap; flex: none; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 5px; letter-spacing: .5px; }
+.tag.buy { color: var(--up); background: var(--up-soft); } .tag.sell { color: var(--down); background: var(--down-soft); }
+.tag.info { color: var(--text-2); background: var(--surface-3); } .tag.hold { color: var(--warn); background: color-mix(in srgb, var(--warn) 16%, transparent); }
+/* ---------- big money ---------- */
+.bm-top { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 12px; margin-bottom: 14px; }
+.bm-top > div { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+.bm-top .k { font-size: 11px; color: var(--muted); font-weight: 600; } .bm-top .v { font-size: 20px; font-weight: 600; margin-top: 4px; } .bm-top .s { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+.gauge { height: 8px; border-radius: 6px; background: linear-gradient(90deg, var(--down) 0 20%, var(--surface-3) 20% 80%, var(--up) 80% 100%); position: relative; margin-top: 8px; }
+.gauge i { position: absolute; top: -4px; width: 4px; height: 16px; border-radius: 2px; background: var(--text); transform: translateX(-2px); }
+/* ---------- news channels + live TV ---------- */
+.nchips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.nchips button { border: 1px solid var(--border); background: var(--surface); padding: 3px 8px; border-radius: 7px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--text-2); }
+.nchips button.on { color: var(--text); border-color: var(--border-2); background: var(--surface-3); }
+.tv { margin-top: 12px; } .tv .frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: #000; margin-top: 8px; }
+.tv iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* ---------- tabs ---------- */
+.tabsnav { display: flex; gap: 6px; margin-top: 16px; overflow-x: auto; position: sticky; top: 58px; z-index: 20; padding: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+.tabsnav button { border: 0; background: transparent; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text-2); white-space: nowrap; }
+.tabsnav button.on { background: var(--surface-3); color: var(--text); }
+.tabsec.hide { display: none !important; }
+.subh { font-size: 14px; margin: 18px 0 8px; } .subh .sub { font-weight: 500; margin-left: 6px; }
+.news-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+.lv { font-size: 11px; color: var(--warn); font-weight: 700; }
+.sline { margin-top: 6px; } .succ { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
+.succ.g { color: var(--up); background: var(--up-soft); } .succ.r { color: var(--down); background: var(--down-soft); } .succ small { font-weight: 500; opacity: .8; }
+.tag.best { color: #b7791f; background: color-mix(in srgb, #f6c344 22%, transparent); }
+.chartslot .main { margin-top: 16px; } .tag.sm { font-size: 9px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
 /* ---------- upstox additions ---------- */
@@ -385,11 +450,26 @@ footer .sig b { color: var(--accent); font-weight: 700; }
 </div></div>
 
 <div class="wrap">
+  <nav class="tabsnav" id="tabsnav" role="tablist">
+    <button data-tab="overview" class="on">Overview</button><button data-tab="buying">Buying · all signals</button>
+    <button data-tab="selling">Selling</button><button data-tab="bigmoney">Big money</button><button data-tab="news">News &amp; TV</button>
+  </nav>
+  <div data-tab="overview" class="tabsec">
   <div class="tickers" id="tickers"></div>
+  <div class="striplbl">Strategy signals · buy &amp; sell <span class="sub">tap a card for details</span></div>
+  <div class="sigstrip" id="sigStrip"></div>
+  <div class="striplbl">Stock &amp; index option signals <span class="sub" id="sigHint">tested strategies only · SL / TG on the option price</span></div>
+  <div class="sigstrip" id="sigStrip2"></div>
 
-  <div class="today" id="today"></div>
+  </div>
+  <div data-tab="selling" class="tabsec">
+    <div class="striplbl">Selling strategies <span class="sub">success rate since 2022 · SL per sold leg · exit 15:15</span></div>
+    <div class="sigstrip" id="sStrip"></div>
+    <div class="chartslot" data-slot="selling"></div>
+    <div class="today" id="today"></div></div>
 
-  <div class="main">
+  <div class="tabsec" data-tab="overview"><div class="chartslot" data-slot="overview">
+  <div class="main" id="mainChart">
     <div class="panel" style="--i:1">
       <div class="chart-head">
         <span class="chart-title" id="cTitle">–</span>
@@ -402,9 +482,10 @@ footer .sig b { color: var(--accent); font-weight: 700; }
       <div class="legend">
         <span><span class="sw" style="background:var(--ema50)"></span>EMA 20</span>
         <span><span class="sw" style="background:var(--ema200)"></span>EMA 50</span>
-        <span><b style="color:var(--accent)">● S</b> = straddle sold · <b class="pos-t">▲ CE</b> / <b class="neg-t">▼ PE</b> = option bought · <b>✕</b> = exit</span>
+        <span id="cLegend"><b style="color:var(--accent)">● S</b> = straddle sold · <b class="pos-t">▲ CE</b> / <b class="neg-t">▼ PE</b> = option bought · <b>✕</b> = exit</span>
         <span class="live-tag"><span class="dot ok"></span>updates every 15 s in market hours</span>
       </div>
+      <div class="filters" id="cFilt" style="margin-top:8px"></div>
       <div id="ohlc" class="mono"></div>
       <div class="chart-box loading" id="chartBox"><div class="skeleton"></div><div id="chart"></div></div>
     </div>
@@ -412,21 +493,58 @@ footer .sig b { color: var(--accent); font-weight: 700; }
       <div class="panel" style="--i:2" id="side"></div>
     </div>
   </div>
+  </div></div>
+  <div class="tabsec" data-tab="buying"><div class="chartslot" data-slot="buying"></div></div>
 
-  <div class="panel section" style="--i:4" id="journalPanel">
+  <div class="panel section tabsec" data-tab="buying" style="--i:3" id="buyPanel">
+    <div class="ph"><h2>Option buying · paper accounts</h2><span class="hint" id="bHint">signals each evening · buy at the next 09:15 open · real NSE prices · paper only</span></div>
+    <div class="callout" id="bCallout"></div>
+    <h3 class="subh">Buying strategies · best first <span class="sub">success rate on unseen 2025–26 data · SL / TG on the option price</span></h3>
+    <div class="sigstrip" id="bStrip"></div>
+    <h3 class="subh">Paper accounts</h3>
+    <div class="books" id="bBooks"></div>
+    <h3 class="subh">Tonight's signals · every strategy <span class="sub" id="bSigHint"></span></h3>
+    <div class="scroll"><table id="bSig"></table></div>
+    <h3 class="subh">Strategies · best first <span class="sub">ranked by the weaker of their 2022–24 and 2025–26 profit factor (PF = ₹ won per ₹1 lost)</span></h3>
+    <div class="scroll"><table id="bStr" class="cmp"></table></div>
+    <h3 class="subh">Trades</h3>
+    <div class="filters" id="bFilters"></div>
+    <div class="scroll"><table id="bTbl"></table></div>
+    <div class="pager" id="bPager"></div>
+  </div>
+
+  <div class="panel section tabsec" data-tab="bigmoney" style="--i:3" id="bmPanel">
+    <div class="ph"><h2>Big money · FII / DII / Pro / retail</h2><span class="hint" id="bmHint">NSE participant-wise positions + cash-market flows · updated each evening</span></div>
+    <div class="bm-top" id="bmTop"></div>
+    <div class="callout" id="bmCallout"></div>
+    <div class="scroll"><table id="bmTbl"></table></div>
+  </div>
+
+  <div class="panel section tabsec" data-tab="news" style="--i:3" id="newsPanel">
+    <div class="ph"><h2>News &amp; live TV</h2><span class="hint">7 business channels · tap a symbol in the scanner (Buying tab) for its own news</span></div>
+    <div class="scan-grid news-grid"><div class="newsbox" id="newsBox"></div><div class="newsbox tv" id="tvBox"></div></div>
+  </div>
+
+  <div class="panel section tabsec" data-tab="buying" style="--i:3" id="scanPanel">
+    <div class="ph"><h2>OI scanner · every index &amp; stock</h2><span class="hint" id="sHint">updated each evening after NSE publishes open interest</span></div>
+    <div class="scroll"><table id="sTbl"></table></div>
+    <p class="sub" style="margin-top:12px">Call : put OI = open interest of calls vs puts on strikes within ±2% of the price (nearest expiry). <b>Rank</b> = where today's call share sits in its own last 60 days (0 = fewest calls ever, 100 = most). Signal fires at rank ≤ 10 (buy CE) or ≥ 90 (buy PE): the side with less OI. Put wall / call wall = strike with the most put / call OI. Futures = price move + change in futures OI. News mood is a simple word count and is <b>not</b> part of the tested rules.</p>
+  </div>
+
+  <div class="panel section tabsec" data-tab="selling" style="--i:4" id="journalPanel">
     <div class="ph"><h2>Paper trading · every trade</h2><span class="hint">simulated live with real index prices · no real orders · click a card to filter</span></div>
     <div class="books" id="books"></div>
     <div class="filters" id="jFilters"></div>
     <div class="scroll"><table id="jTbl"></table></div>
   </div>
 
-  <div class="panel section" style="--i:5" id="histPanel">
+  <div class="panel section tabsec" data-tab="selling" style="--i:5" id="histPanel">
     <div class="ph"><h2>Strategy research · what works on Indian indices</h2><span class="hint" id="rHint">settings chosen on 2022–2024, judged on 2025–2026 only</span></div>
     <div class="callout" id="rCallout"></div>
     <div class="scroll"><table id="rTbl" class="cmp"></table></div>
   </div>
 
-  <div class="panel section" style="--i:6">
+  <div class="panel section tabsec" data-tab="selling" style="--i:6">
     <div class="ph"><h2>Strategy history · every past trade</h2><span class="hint" id="hHint">replaying Jan 2022 → today · loading…</span></div>
     <div class="hprog" id="hProg"><i style="width:0%"></i></div>
     <div class="bookgrid" id="hGrid"></div>
@@ -457,7 +575,7 @@ footer .sig b { color: var(--accent); font-weight: 700; }
 <script>
 "use strict";
 const IST = 19800;
-const S = { ix: null, tf: "15m", range: "1M", ov: null, q: null, paper: null, h: null, r: null, jf: { book: "all", res: "all" },
+const S = { bm: null, nsrc: "all", tv: null, tvOn: null, b: null, sc: null, nsym: null, bf: { book: null, mode: "paper", year: "all" }, bPage: 0, ix: null, tf: "15m", range: "1M", ov: null, q: null, paper: null, h: null, r: null, jf: { book: "all", res: "all" },
             hf: { book: null, year: "all", res: "all" }, hPage: 0, lastOk: 0, seen: {} };
 let chart, candleS, e20S, e50S;
 const $ = id => document.getElementById(id);
@@ -508,9 +626,12 @@ function csvDownload(name, rows) {
 function renderTop() {
   const m = S.ov && S.ov.market;
   if (m) { $("mktText").textContent = m.text; $("mktDot").className = "dot " + (m.open ? "ok" : "stale"); }
-  const age = (Date.now() - S.lastOk) / 1000;
-  $("connText").textContent = !S.lastOk ? "Connecting…" : age < 40 ? "Live" : age < 120 ? `Delayed ${Math.round(age)}s` : "Disconnected";
-  $("connDot").className = "dot " + (!S.lastOk ? "" : age < 40 ? "ok" : age < 120 ? "stale" : "err");
+  const age = (Date.now() - S.lastOk) / 1000, open = m && m.open, [ok, slow] = open ? [6, 20] : [90, 180];
+  const src = open && m.auction ? " · index paused (closing auction)" : open && S.live ? (S.live.source === "upstox" ? " · Upstox" : " · ~1 min") : "";
+  $("connText").textContent = !S.lastOk ? "Connecting…" : age < ok ? "Live" + src : age < slow ? `Delayed ${Math.round(age)}s` : "Disconnected";
+  $("connDot").className = "dot " + (!S.lastOk ? "" : age < ok ? "ok" : age < slow ? "stale" : "err");
+  $("connPill").title = open ? (S.live && S.live.source === "upstox" ? "Prices: Upstox live quotes, updated every 2 s" :
+    "Prices: latest 1-minute candle (add UPSTOX_ANALYTICS_TOKEN in .env for real-time quotes)") : "Market closed: prices refresh every 30 s";
 }
 
 /* ---------- tickers ---------- */
@@ -574,8 +695,25 @@ function restyle() {
   e20S.applyOptions({ color: css("--ema50") }); e50S.applyOptions({ color: css("--ema200") });
   if (S.q) renderTickers();
 }
+const SHORT = { "idx-smart": "SM", "idx-breakout": "BO", "idx-emax": "EMA", "idx-oi": "OI", "stk-smart": "SM" };
+const dayTs = (d, hm) => Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10), Math.floor(hm / 100), hm % 100) / 1000 - IST;
+function chartMode() { return S.tab === "buying" ? "buy" : S.tab === "selling" ? "sell" : "all"; }
+function topBuy() { return rankedStrategies().filter(x => x.combined !== false && (x.syms || []).includes(S.ix)).slice(0, 3); }
+function topSell() { return ((S.h && S.h.books) || []).filter(b => b.index === S.ix).slice().sort((p, q) => (q.stats.pf || 0) - (p.stats.pf || 0)).slice(0, 3); }
+function renderChartFilters() {
+  const m = chartMode(), el = $("cFilt"); if (!el) return;
+  S.cOff = S.cOff || {};
+  const items = m === "buy" ? topBuy().map(x => [x.id, `${SHORT[x.id] || ""} · ${x.label.replace("Index · ", "")}`, x.test ? `${fmt(x.test.win, 0)}% · PF ${fmt(x.test.pf)}` : ""])
+    : m === "sell" ? topSell().map(b => [b.id, b.label, `${fmt(b.stats.win, 0)}% · PF ${fmt(b.stats.pf)}`]) : [];
+  $("cLegend").innerHTML = m === "buy" ? `<b class="pos-t">▲ CE</b> / <b class="neg-t">▼ PE</b> = option bought at the 09:15 open (label = strategy) · <b>✕</b> = exit (green = profit) · daily signals`
+    : m === "sell" ? `<b style="color:var(--accent)">● S</b> = hedged straddle sold at 10:00 · <b>✕</b> = exit (green = profit)`
+    : `<b style="color:var(--accent)">● S</b> = straddle sold · <b class="pos-t">▲ CE</b> / <b class="neg-t">▼ PE</b> = option bought · <b>✕</b> = exit`;
+  if (!items.length) { el.innerHTML = m === "buy" ? `<span class="sub">No buying strategy trades ${esc(S.ix)} options (they use Nifty and Bank Nifty). <button class="btn-dl" id="cGoN" style="margin-left:6px">Show Nifty</button></span>` : m === "sell" ? `<span class="sub">No selling book on ${esc(S.ix)}.</span>` : ""; if ($("cGoN")) $("cGoN").onclick = () => select("NIFTY"); return; }
+  el.innerHTML = `<span class="lbl">Top ${items.length} on ${esc(S.ix)}</span><span class="fchips">` + items.map(([id, l, st]) => `<button data-id="${id}" class="${S.cOff[id] ? "" : "on"}">${esc(l)} <span class="sub">${st}</span></button>`).join("") + `</span>`;
+  el.querySelectorAll("button[data-id]").forEach(b => b.onclick = () => { S.cOff[b.dataset.id] = !S.cOff[b.dataset.id]; renderChartFilters(); loadChart(false); });
+}
 function tradeMarkers(first) {
-  const out = [];
+  const out = [], m = chartMode(), off = S.cOff || {};
   const add = (t, live) => {
     if (t.index !== S.ix || t.t0 < first) return;
     const sell = /SELL/.test(t.side), ce = t.kind === "CE";
@@ -583,8 +721,26 @@ function tradeMarkers(first) {
                color: sell ? css("--accent") : ce ? css("--up") : css("--down"), text: sell ? "S" : t.kind });
     if (t.result !== "open") out.push({ time: t.t1 + IST, position: "inBar", shape: "square", color: t.pnl > 0 ? css("--up") : css("--down"), text: "✕" });
   };
-  if (S.h) for (const b of S.h.books) for (const t of b.trades) add(t);
-  if (S.paper) for (const b of S.paper) for (const t of b.open) add(t, true);
+  if (m !== "buy") {
+    const keep = m === "sell" ? new Set(topSell().map(b => b.id).filter(id => !off[id])) : null;
+    if (S.h) for (const b of S.h.books) if (!keep || keep.has(b.id)) for (const t of b.trades) add(t);
+    if (S.paper) for (const b of S.paper) if (!keep || keep.has(b.id)) for (const t of b.open) add(t, true);
+  }
+  if (m !== "sell" && S.b) {                         // option-BUYING strategies: daily signals, bought 09:15, sold at a close
+    const ids = m === "buy" ? topBuy().map(x => x.id).filter(id => !off[id]) : topBuy().map(x => x.id);
+    for (const x of S.b.strategies.filter(x => ids.includes(x.id)))
+      for (const t of x.trades) {
+        if (t.sym !== S.ix) continue;
+        const t0 = dayTs(t.entry_day, 915), t1 = dayTs(t.exit_day, 1515), ce = t.kind === "CE";
+        if (t0 < first) continue;
+        out.push({ time: t0 + IST, position: ce ? "belowBar" : "aboveBar", shape: ce ? "arrowUp" : "arrowDown", color: ce ? css("--up") : css("--down"), text: `${t.kind} ${SHORT[x.id] || ""}` });
+        out.push({ time: t1 + IST, position: "inBar", shape: "square", color: t.pnl > 0 ? css("--up") : css("--down"), text: "✕" });
+      }
+    for (const ac of S.b.accounts) for (const t of ac.open) if (t.sym === S.ix) {
+      const t0 = dayTs(t.entry_day, 915), ce = t.kind === "CE";
+      if (t0 >= first) out.push({ time: t0 + IST, position: ce ? "belowBar" : "aboveBar", shape: ce ? "arrowUp" : "arrowDown", color: css("--warn"), text: `${t.kind} paper` });
+    }
+  }
   return out.sort((a, b) => a.time - b.time);
 }
 async function loadChart(showSkel) {
@@ -596,7 +752,7 @@ async function loadChart(showSkel) {
     if (want !== S.ix + S.tf + S.range) return;
     const sh = x => x.map(c => ({ ...c, time: c.time + IST }));
     const candles = sh(d.candles);
-    candleS.setData(candles); e20S.setData(sh(d.ema20).filter(x => x.value !== null)); e50S.setData(sh(d.ema50).filter(x => x.value !== null));
+    candleS.setData(candles); S.chartLast = candles.length ? candles[candles.length - 1].time : 0; S.chartKey = want; e20S.setData(sh(d.ema20).filter(x => x.value !== null)); e50S.setData(sh(d.ema50).filter(x => x.value !== null));
     const first = d.candles.length ? d.candles[0].time : 0;
     const times = new Set(candles.map(c => c.time));
     const snap = t => { let best = null; for (const c of candles) { if (c.time <= t) best = c.time; else break; } return best; };
@@ -612,7 +768,7 @@ function select(ix) {
   if (!ix) return;
   const ch = ix !== S.ix; S.ix = ix; storeSet("uix", ix);
   $("cTitle").textContent = (S.q && (S.q.find(q => q.name === ix) || {}).label) || ix;
-  renderTickers(); renderSide();
+  renderTickers(); renderSide(); renderChartFilters();
   if (ch) loadChart(true);
 }
 function setTf(v) { S.tf = v; buildSeg("tfSeg", ["5m", "15m", "1h", "1D"], v, setTf); loadChart(true); }
@@ -670,6 +826,16 @@ function renderToday() {
 /* ---------- side panel: the strategy for the selected index ---------- */
 function renderSide() {
   if (!S.ov) return;
+  if (S.tab === "buying") {
+    const bs = topBuy();
+    $("side").innerHTML = `<div class="ph"><h2>${esc(S.ix || "")} · buying strategies (best first)</h2></div>` + (bs.length ? bs.map((x, i) => { const t = x.test || {}, a = x.train || {}, p = x.params;
+      return `<div style="margin-bottom:14px"><div class="k1" style="display:flex;gap:8px;align-items:center"><span class="fam">${i === 0 ? "★ " : ""}${SHORT[x.id] || ""}</span><b>${esc(x.label)}</b></div>
+        <p class="sub" style="font-size:13px;color:var(--text-2)">${esc(x.note)}</p>
+        <div class="rr"><div><div class="k">Win 2025–26</div><div class="v">${fmt(t.win, 0)}%</div></div><div><div class="k">PF 2025–26</div><div class="v ${t.pf > 1 ? "pos-t" : "neg-t"}">${fmt(t.pf)}</div></div><div><div class="k">Net 2025–26</div><div class="v ${cls(t.net)}">${sinr(t.net)}</div></div>
+          <div><div class="k">Stop (SL)</div><div class="v neg-t">−${fmt(p.sl * 100, 0)}%</div></div><div><div class="k">Target (TG)</div><div class="v pos-t">${p.tp ? "+" + fmt(p.tp * 100, 0) + "%" : "none"}</div></div><div><div class="k">2022–24</div><div class="v">${fmt(a.win, 0)}% · ${fmt(a.pf)}</div></div></div></div>`; }).join("")
+      : `<p class="sub">No buying strategy on ${esc(S.ix || "")}: they trade Nifty and Bank Nifty options (and 20 stocks).</p>`);
+    return;
+  }
   const bs = S.ov.books.filter(b => b.index === S.ix);
   const hb = S.h ? S.h.books.filter(b => b.index === S.ix) : [];
   $("side").innerHTML = `<div class="ph"><h2>${esc(S.ix || "")} · strategy in use</h2></div>` + (bs.length ? bs.map(b => {
@@ -781,26 +947,268 @@ function renderHistory() {
   renderSide();
 }
 
+
+/* ---------- option buying ---------- */
+const B_PAGE = 40;
+const symName = s => ({ NIFTY: "Nifty", BANKNIFTY: "Bank Nifty", MIDCPNIFTY: "Midcap Nifty" }[s] || s);
+const contract = t => `${symName(t.sym)} ${fmt(t.strike, 0)}${t.strike2 ? "/" + fmt(t.strike2, 0) : ""} ${t.kind}${t.strike2 ? " spread" : ""}`;
+const pctx = x => x === null || x === undefined ? "–" : fmt(x, 1) + "%";
+const lvls = t => `SL ₹${fmt(t.stop)}${t.target ? ` · TG ₹${fmt(t.target)}` : " · no target"}`;
+function statPill(lbl, s, cap) {
+  if (!s) return "";
+  return `<span class="${s.net > 0 ? "g" : "r"}">${lbl}: ${s.n} trades · win ${fmt(s.win, 0)}% · PF ${fmt(s.pf)}${cap && s.end !== undefined ? ` · ₹${fmt(cap / 1000, 0)}k → ${inr(s.end)}` : ""}</span>`;
+}
+const benefitOf = id => { const x = ((S.b && S.b.strategies) || []).find(y => y.id === id); return x ? benefit(x) : 0; };
+function renderBuying() {
+  const d = S.b; if (!d) return;
+  const acc = d.accounts || [];
+  const a20 = acc.find(a => a.capital <= 20000), a50 = acc.find(a => a.capital > 20000);
+  $("bCallout").innerHTML = `<b>How these were chosen:</b> 20+ buying strategies (open interest, FII/DII "smart money", RSI, EMA, MACD, ADX breakout, Supertrend, Bollinger, with 1:2 and other exits) were tested on real NSE option prices; each strategy's settings were picked on 2022–24 and then checked on unseen 2025–26 data. ` +
+    `The combined accounts take every signal from the 4 that held up, best first. <b>Account size matters more than the signal:</b> ${a20 && a20.bt.rolling ? `with ₹20k (small spread trades) ${a20.bt.rolling.profit_pct}% of 12-month runs started in any month ended in profit` : ""}${a50 && a50.bt.rolling ? `; with ₹50k (plain option buys) ${a50.bt.rolling.profit_pct}%` : ""}. Buying full lots from ₹20k failed (47%): one loss and the next lot is unaffordable.`;
+  $("bHint").textContent = d.asof ? `NSE data up to ${d.asof} · buy at the next 09:15 open · real NSE prices · paper only${d.live ? " · live estimates on" : ""}` : "first evening run pending (after ~19:00 IST)";
+  if (!S.bf.book || !acc.find(b => b.id === S.bf.book)) S.bf.book = acc[0] && acc[0].id;
+  $("bBooks").innerHTML = acc.map((b, i) => {
+    const wr = b.n ? b.wins / b.n * 100 : null;
+    const ops = b.open.map(op => `<div class="plan"><b class="k">Open · ${esc(op.strategy_label || "")}</b>${esc(contract(op))} · exp ${esc(op.expiry)} · in ₹${fmt(op.entry)} on ${esc(op.entry_day)}
+        <div class="why">${lvls(op)} · day ${op.days}${op.live ? ` · <span class="lv">LIVE est.</span> ₹${fmt(op.live.price)} (${symName(op.sym)} ${fmt(op.live.spot)}) <b class="${cls(op.live.pnl)}">${sinr(op.live.pnl)}</b>${op.live.hit_stop ? ' <span class="neg-t">near/through stop</span>' : op.live.hit_target ? ' <span class="pos-t">target reached</span>' : ""}` : ` · last close ₹${fmt(op.last1 !== undefined && op.strike2 ? op.last1 - (op.last2 || 0) : op.exit)}`}</div></div>`).join("");
+    const pls = (b.plan || []).map(pl => `<div class="plan"><b class="k">Plan · next 09:15 open · ${esc(pl.strategy_label)}</b>BUY ${esc(contract(pl))} · exp ${esc(pl.expiry)} ≈ ₹${fmt(pl.price)} × ${pl.lot} = ${inr(pl.cost)}<div class="why">${lvls(pl)} · max ${pl.hold} days · ${esc(pl.why)}</div></div>`).join("");
+    return `<div class="book ${S.bf.book === b.id ? "on" : ""} ${b.open.length ? "traded" : ""}" style="animation-delay:${i * 50}ms" data-b="${b.id}">
+      <div class="bh"><span>${esc(b.label)}</span><small>paper · ₹${fmt(b.capital / 1000, 0)}k · up to ${b.max_pos} at once</small></div>
+      <div class="eq mono">${inr(b.equity)}${b.live_pnl ? ` <span class="lv">${sinr(b.live_pnl)} open est.</span>` : ""}</div><div class="sub">start ${inr(b.capital)} on ${esc(b.start)} · closed net <span class="${cls(b.net)}">${sinr(b.net)}</span></div>
+      <div class="bg"><div>Trades<b>${b.n}</b></div><div>Win rate<b>${wr === null ? "–" : fmt(wr, 0) + "%"}</b></div><div>Open<b>${b.open.length}</b></div></div>
+      ${ops}${pls}${!ops && !pls ? `<div class="plan"><b class="k">Plan · next 09:15 open</b>No signal tonight: wait.</div>` : ""}
+      <div class="btpills">${statPill("2022–24", b.bt.train, b.capital)}${statPill("2025–26 unseen", b.bt.test, b.capital)}${b.bt.rolling ? `<span class="${b.bt.rolling.profit_pct >= 60 ? "g" : "r"}">start any month: ${b.bt.rolling.profit_pct}% of 12-month runs in profit · median ${inr(b.bt.rolling.median_end)}</span>` : ""}</div>
+      <div class="note">${esc(b.note)}</div></div>`; }).join("") || `<div class="sub">No accounts configured.</div>`;
+  $("bBooks").querySelectorAll(".book").forEach(el => el.onclick = () => { S.bf.book = el.dataset.b; S.bPage = 0; renderBuying(); });
+  // tonight's signals (all strategies)
+  const sg = d.signals || [];
+  $("bSigHint").textContent = d.asof ? `from NSE data of ${d.asof} · 1 lot, plain option, priced at that close · SL / TG = stop / target on the option price` : "";
+  $("bSig").innerHTML = sg.length ? `<thead><tr><th>Strategy</th><th>Signal</th><th>Option</th><th>Expiry</th><th>Price (last close)</th><th>Stop (SL)</th><th>Target (TG)</th><th>Lot · cost</th><th>Hold</th><th>Time decay · Δ</th><th>Why</th></tr></thead><tbody>` +
+    sg.slice().sort((x, y) => benefitOf(y.strategy) - benefitOf(x.strategy) || x.cost - y.cost).map(x => `<tr><td>${esc(x.strategy_label)}</td><td><span class="sig ${x.kind === "CE" ? "ce" : "pe"}">BUY ${x.kind}</span></td><td><b>${esc(contract(x))}</b></td><td class="mono">${esc(x.expiry)}</td>
+      <td class="mono">₹${fmt(x.price)}</td><td class="mono neg-t">₹${fmt(x.stop)} <span class="sub">−${fmt(x.sl_pct * 100, 0)}%</span></td><td class="mono pos-t">${x.target ? "₹" + fmt(x.target) + ` <span class="sub">+${fmt(x.tp_pct * 100, 0)}%</span>` : "–"}</td>
+      <td class="mono">${x.lot} · ${inr(x.cost)}</td><td class="mono">≤ ${x.hold}d</td><td class="mono">${x.theta_day != null ? sinr(x.theta_day) + "/day · Δ " + fmt(x.delta) : "–"}</td><td class="sub" style="white-space:normal;min-width:220px">${esc(x.why)}</td></tr>`).join("") + `</tbody>`
+    : `<tbody><tr><td class="empty"><div class="big">🌙</div>No buy signal from any strategy tonight. Signals are rare by design (≈ 3–6 a month across all strategies).</td></tr></tbody>`;
+  // strategies table
+  const ss = rankedStrategies();
+  const gd = (v, good) => `<td class="mono ${v === null || v === undefined ? "" : good ? "good" : "bad"}">`;
+  $("bStr").innerHTML = `<thead><tr><th>#</th><th>Strategy</th><th>Exit rule</th><th>2022–24 trades</th><th>Win %</th><th>PF</th><th>2025–26 trades</th><th>Win %</th><th>PF</th><th>Net 2025–26</th><th>In accounts</th></tr></thead><tbody>` +
+    ss.map((x, i) => { const a = x.train || {}, t = x.test || {}, p = x.params;
+      return `<tr class="${x.combined ? "pick" : ""}"><td class="mono">${i === 0 ? "★ 1" : i + 1}</td><td><b>${esc(x.label)}</b><div class="sub" style="white-space:normal;max-width:360px">${esc(x.note)}</div></td>
+      <td class="sub">SL −${fmt(p.sl * 100, 0)}%${p.tp ? ` · TG +${fmt(p.tp * 100, 0)}% (1:${fmt(p.tp / p.sl, 0)})` : " · no target"} · ≤ ${p.hold}d · ${p.offset > 0 ? "1 ITM" : "ATM"}</td>
+      <td class="mono">${a.n ?? "–"}</td><td class="mono">${fmt(a.win, 0)}</td>${gd(a.pf, a.pf > 1)}${fmt(a.pf)}</td><td class="mono">${t.n ?? "–"}</td><td class="mono"><b>${fmt(t.win, 0)}</b></td>${gd(t.pf, t.pf > 1)}<b>${fmt(t.pf)}</b></td>${gd(t.net, t.net > 0)}${sinr(t.net)}</td>
+      <td>${x.combined ? '<span class="st won">YES</span>' : '<span class="sub">shown only</span>'}</td></tr>`; }).join("") + `</tbody>`;
+  // trades table
+  const b = acc.find(x => x.id === S.bf.book); if (!b) return;
+  let rows = S.bf.mode === "paper" ? [...b.open, ...b.closed] : (b.bt_trades || []);
+  const years = [...new Set((b.bt_trades || []).map(t => String(t.entry_day).slice(0, 4)))];
+  if (S.bf.mode === "bt" && S.bf.year !== "all") rows = rows.filter(t => String(t.entry_day).startsWith(S.bf.year));
+  const chips = (k, items) => `<span class="fchips">` + items.map(([v, l]) => `<button data-k="${k}" data-v="${v}" class="${S.bf[k] === v ? "on" : ""}">${l}</button>`).join("") + `</span>`;
+  const won = rows.filter(t => t.pnl > 0 && t.reason !== "open").length, net = rows.reduce((x, t) => x + (t.reason === "open" ? 0 : t.pnl || 0), 0);
+  $("bFilters").innerHTML = `<span class="lbl">${esc(b.label)}</span>` + chips("mode", [["paper", "Paper trades"], ["bt", "Backtest since 2022"]]) +
+    (S.bf.mode === "bt" ? `<span class="lbl">Year</span>` + chips("year", [["all", "All"], ...years.map(y => [y, y])]) : "") +
+    `<span class="sub">${rows.length} trades · ${won} won · net <b class="${cls(net)}">${sinr(net)}</b></span><button class="btn-dl" id="bDl">⬇ CSV</button>`;
+  $("bFilters").querySelectorAll("button[data-k]").forEach(x => x.onclick = () => { S.bf[x.dataset.k] = x.dataset.v; S.bPage = 0; renderBuying(); });
+  $("bDl").onclick = () => csvDownload(`buying_${b.id}_${S.bf.mode}.csv`, rows.map(({ live, ...r }) => r));
+  const pages = Math.max(1, Math.ceil(rows.length / B_PAGE)); S.bPage = Math.min(S.bPage || 0, pages - 1);
+  const pg = rows.slice(S.bPage * B_PAGE, (S.bPage + 1) * B_PAGE);
+  $("bTbl").innerHTML = rows.length ? `<thead><tr><th>Result</th><th>Strategy</th><th>Bought (09:15)</th><th>Sold</th><th>Option</th><th>Expiry</th><th>Price in → out</th><th>SL / TG</th><th>Cost</th><th>Exit</th><th>P&L</th><th>Account</th></tr></thead><tbody>` +
+    pg.map(t => { const r = t.reason === "open" ? "open" : t.pnl > 0 ? "won" : "lost", pnl = t.reason === "open" && t.live ? t.live.pnl : t.pnl;
+      return `<tr><td><span class="st ${r}">${r.toUpperCase()}</span></td><td class="sub">${esc(t.strategy_label || "")}</td><td class="mono">${esc(t.entry_day)}</td><td class="mono">${t.reason === "open" ? "–" : esc(t.exit_day)}</td>
+      <td><b class="${t.kind === "CE" ? "pos-t" : "neg-t"}">${esc(contract(t))}</b></td><td class="mono">${esc(t.expiry)}</td><td class="mono">₹${fmt(t.entry)} → ₹${fmt(t.reason === "open" && t.live ? t.live.price : t.exit)}${t.reason === "open" && t.live ? ' <span class="lv">est.</span>' : ""}</td>
+      <td class="mono sub">₹${fmt(t.stop)} / ${t.target ? "₹" + fmt(t.target) : "–"}</td><td class="mono">${inr(t.cost)}</td><td class="sub">${esc(t.reason)}</td><td class="mono ${cls(pnl)}"><b>${sinr(pnl)}</b></td><td class="mono">${t.equity !== undefined ? inr(t.equity) : "–"}</td></tr>`; }).join("") + `</tbody>`
+    : `<tbody><tr><td class="empty"><div class="big">🗒️</div>${S.bf.mode === "paper" ? "No paper buys yet. The bot checks every strategy each evening after NSE publishes its data; a buy fills at the next 09:15 open at the real price." : "Backtest not found: run research/buy_final.py"}</td></tr></tbody>`;
+  $("bPager").innerHTML = pages > 1 ? `<button id="bPrev" ${S.bPage ? "" : "disabled"}>‹ Newer</button><span>page ${S.bPage + 1} / ${pages}</span><button id="bNext" ${S.bPage < pages - 1 ? "" : "disabled"}>Older ›</button>` : "";
+  if (pages > 1) { $("bPrev").onclick = () => { S.bPage--; renderBuying(); }; $("bNext").onclick = () => { S.bPage++; renderBuying(); }; }
+}
+
+/* ---------- OI scanner + news ---------- */
+function renderScan() {
+  const d = S.sc; if (!d || !d.rows) { $("sTbl").innerHTML = `<tbody><tr><td class="empty"><div class="big">📊</div>Scanner fills after the first evening run (python bot.py --evening).</td></tr></tbody>`; return; }
+  $("sHint").textContent = `NSE data for ${d.asof} · updated each evening`;
+  const nifty = d.rows.find(r => r.sym === "NIFTY") || {};
+  if ($("fiiStrip")) $("fiiStrip").innerHTML = nifty.fii_long !== undefined ? `<div>FII index futures · long share<b class="mono">${pctx(nifty.fii_long)}</b></div><div>Change vs previous day<b class="mono ${cls(nifty.fii_chg)}">${nifty.fii_chg > 0 ? "+" : ""}${fmt(nifty.fii_chg)} pts</b></div>` +
+    `<div>Reading<b>${nifty.fii_long < 30 ? "FIIs heavily short" : nifty.fii_long > 60 ? "FIIs mostly long" : "FIIs mixed"}</b></div>` : "";
+  const order = r => (r.index ? 0 : 1);
+  const rows = d.rows.slice().sort((a, b) => order(a) - order(b) || (a.signal ? 0 : 1) - (b.signal ? 0 : 1) || a.sym.localeCompare(b.sym));
+  $("sTbl").innerHTML = `<thead><tr><th>Symbol</th><th>Signal</th><th>Price · day</th><th>Call : put OI (±2%)</th><th>Rank</th><th>PCR</th><th>Put / call wall</th><th>Futures</th></tr></thead><tbody>` +
+    rows.map(r => `<tr data-s="${esc(r.sym)}" class="${S.nsym === r.sym ? "on" : ""}"><td><b>${esc(symName(r.sym))}</b>${r.index ? "" : ' <span class="sub">stock</span>'}</td>
+      <td>${r.signal ? `<span class="sig ${r.signal.endsWith("CE") ? "ce" : "pe"}">${r.signal}</span>${["NIFTY", "BANKNIFTY"].includes(r.sym) ? "" : ' <span class="sub">info only</span>'}` : '<span class="sub">–</span>'}</td>
+      <td class="mono">${fmt(r.spot)} <span class="${cls(r.ret)}">${r.ret === null ? "" : (r.ret > 0 ? "+" : "") + fmt(r.ret) + "%"}</span></td>
+      <td class="mono"><span class="oibar"><i style="width:${r.cs2 || 0}%"></i></span>${r.cs2 === null ? "–" : fmt(r.cs2, 0) + " : " + fmt(100 - r.cs2, 0)}</td>
+      <td class="mono">${r.rank2 ?? "–"}</td><td class="mono">${fmt(r.pcr)}</td><td class="mono">${fmt(r.support, 0)} / ${fmt(r.resistance, 0)}</td>
+      <td class="sub" style="white-space:normal;min-width:130px">${esc(r.buildup || "–")}${r.fut_oi_pct !== null ? ` · OI ${r.fut_oi_pct > 0 ? "+" : ""}${fmt(r.fut_oi_pct, 1)}%` : ""}</td></tr>`).join("") + `</tbody>`;
+  $("sTbl").querySelectorAll("tbody tr").forEach(tr => tr.onclick = () => { S.nsym = tr.dataset.s; renderScan(); loadNews(); });
+}
+async function loadNews() {
+  const sym = S.nsym, src = S.nsrc || "all";
+  const head = d => { const ch = d && d.channels ? d.channels : S.chan || {}; if (d && d.channels) S.chan = d.channels;
+    return `<div class="nchips">` + (sym ? `<button class="on">${esc(symName(sym))}</button>` : "") +
+      [["all", "All channels"], ...Object.entries(ch)].map(([k, v]) => `<button data-src="${k}" class="${!sym && src === k ? "on" : ""}">${esc(v)}</button>`).join("") + `</div>`; };
+  $("newsBox").innerHTML = head(null) + `<div class="sk line"></div><div class="sk line"></div><div class="sk line"></div>`;
+  try {
+    const d = sym ? await getJSON("/api/news?sym=" + encodeURIComponent(sym)) : await getJSON("/api/channels?src=" + encodeURIComponent(src));
+    $("newsBox").innerHTML = `<h3>${sym ? esc(symName(sym)) + " news" : src === "all" ? "Business news · all channels" : esc((d.channels || {})[src] || src)} <span class="mood ${d.mood.label}" title="simple word count, not a trading rule">${d.mood.label} ${d.mood.score > 0 ? "+" : ""}${d.mood.score}</span></h3>` + head(d) + `<ul>` +
+      (d.items.length ? d.items.map(x => `<li><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a><small>${esc(x.source)}${x.ts ? " · " + ist(x.ts) : ""}${x.mood ? ` · <span class="${cls(x.mood)}">${x.mood > 0 ? "+" : ""}${x.mood}</span>` : ""}</small></li>`).join("") : `<li class="sub">No headlines right now.</li>`) + `</ul>`;
+    $("newsBox").querySelectorAll("button[data-src]").forEach(x => x.onclick = () => { S.nsym = null; S.nsrc = x.dataset.src; renderScan(); loadNews(); });
+  } catch (e) { $("newsBox").innerHTML = `<h3>News</h3><p class="sub">News feed unavailable right now.</p>`; }
+}
+function renderTv() {
+  const tv = S.tv || []; if (!tv.length) { $("tvBox").innerHTML = `<h3>Live business TV</h3><p class="sub">Loading channels…</p>`; return; }
+  const cur = tv.find(t => t.handle === S.tvOn);
+  $("tvBox").innerHTML = `<h3>Live business TV</h3><div class="nchips">` + tv.map(t => `<button data-c="${esc(t.handle)}" class="${S.tvOn === t.handle ? "on" : ""}" ${t.video ? "" : "disabled"}>${t.live ? "● " : ""}${esc(t.name)}</button>`).join("") +
+    (cur ? `<button data-c="">✕ Close</button>` : "") + `</div>` +
+    (cur && cur.video ? (cur.embeddable
+      ? `<div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(cur.video)}?autoplay=1&mute=1&playsinline=1" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen title="${esc(cur.name)} live"></iframe></div><p class="sub" style="margin-top:6px">Starts muted: tap the speaker icon for sound.</p>`
+      : `<p class="sub">${esc(cur.name)} does not allow playing its stream outside YouTube.</p>`)
+      : `<p class="sub">Pick a channel to watch it live here. ● = live now.</p>`);
+  $("tvBox").querySelectorAll("button[data-c]").forEach(x => x.onclick = () => { S.tvOn = x.dataset.c || null; renderTv(); });
+}
+async function pullTv() { try { S.tv = await getJSON("/api/livetv"); renderTv(); } catch (e) {} setTimeout(pullTv, 600000); }
+/* ---------- top signal strip: every buy / sell signal in one row ---------- */
+const benefit = x => Math.min((x.train || {}).pf || 0, (x.test || {}).pf || 0);
+const rankedStrategies = () => ((S.b && S.b.strategies) || []).slice().sort((p, q) => (q.combined - p.combined) || benefit(q) - benefit(p));
+const succ = x => x.test ? `<span class="succ ${x.test.pf > 1 ? "g" : "r"}">✓ ${fmt(x.test.win, 0)}% win · PF ${fmt(x.test.pf)} <small>2025–26</small></span>` : "";
+const greekTxt = x => x.theta_day !== undefined && x.theta_day !== null ? ` · <span title="time decay per day for 1 lot (theta) and how much the option moves per 1 point of the index / share (delta)">θ ${sinr(x.theta_day)}/day · Δ ${fmt(x.delta)}</span>` : "";
+function renderSignals() {
+  const cards = [];
+  for (const ac of (S.b ? S.b.accounts : [])) for (const op of ac.open)
+    cards.push({ side: "buy", k: "hold", tag: "HOLDING", src: (op.strategy_label || "") + " · " + ac.label, t2: contract(op) + " · exp " + op.expiry,
+      t3: `in ₹${fmt(op.entry)} · <b class="neg-t">SL ₹${fmt(op.stop)}</b> · <b class="pos-t">${op.target ? "TG ₹" + fmt(op.target) : "no target"}</b>${op.live ? ` · <span class="lv">${op.live.source === "live" ? "LIVE" : "now est."}</span> ₹${fmt(op.live.price)} <b class="${cls(op.live.pnl)}">${sinr(op.live.pnl)}</b>` : ""}${greekTxt(op)}`, go: "buyPanel" });
+  const sg = (S.b && S.b.signals) || [];
+  rankedStrategies().forEach((x, i) => {
+    const mine = sg.filter(y => y.strategy === x.id).sort((p, q) => p.cost - q.cost), p = x.params, first = mine[0];
+    const rule = `SL −${fmt(p.sl * 100, 0)}% · ${p.tp ? "TG +" + fmt(p.tp * 100, 0) + "% (1:" + fmt(p.tp / p.sl, 0) + ")" : "no target"} · ≤ ${p.hold}d`;
+    cards.push(first ? { side: "buy", k: first.kind === "CE" ? "buy" : "sell", tag: "BUY " + first.kind, best: i === 0 && x.combined, src: x.label, succ: succ(x), go: "buyPanel", sym: first.sym,
+        t2: `${esc(contract(first))} · exp ${esc(first.expiry)}`,
+        t3: `≈ ₹${fmt(first.price)} × ${first.lot} = ${inr(first.cost)} · next 09:15<br><b class="neg-t">SL ₹${fmt(first.stop)}</b> · <b class="pos-t">${first.target ? "TG ₹" + fmt(first.target) : "no target"}</b> · ≤ ${p.hold}d${greekTxt(first)}${mine.length > 1 ? `<br><span class="sub">+${mine.length - 1} more signal(s) in the Buying tab</span>` : ""}` }
+      : { side: "buy", k: "wait", tag: x.combined ? "WAIT" : "SHOWN ONLY", best: i === 0 && x.combined, src: x.label, succ: succ(x), go: "buyPanel",
+        t2: "No signal tonight", t3: `rules: <b class="neg-t">SL −${fmt(p.sl * 100, 0)}%</b> · <b class="pos-t">${p.tp ? "TG +" + fmt(p.tp * 100, 0) + "%" : "no target"}</b> · ≤ ${p.hold}d<br><span class="sub">${esc(rule.includes("1:") ? "1:2 risk-reward · " : "")}2022–24: ${fmt((x.train || {}).win, 0)}% win · PF ${fmt((x.train || {}).pf)}</span>` });
+  });
+  const hs = {}; for (const h of ((S.h && S.h.books) || [])) hs[h.id] = h.stats;
+  for (const b of (S.paper || [])) {
+    const op = b.open[0], nx = !op ? nextEntry(b) : null, p = b.params, st = hs[b.id];
+    const sc = st ? `<span class="succ ${st.pf > 1 ? "g" : "r"}">✓ ${fmt(st.win, 0)}% win · PF ${fmt(st.pf)} <small>since 2022</small></span>` : "";
+    if (op) cards.push({ side: "sell", k: "hold", tag: "SOLD", src: b.label, succ: sc, t2: `${esc(op.side)} · exp ${esc(op.expiry)}`,
+      t3: `credit ${inr(op.credit)} · now <span class="${cls(op.pnl)}">${sinr(op.pnl)}</span><br><b class="neg-t">SL: each sold leg +${fmt(p.sl * 100, 0)}%</b> · <b class="pos-t">TG: time decay, exit 15:15</b>`, go: "journalPanel" });
+    else cards.push({ side: "sell", k: "sell", tag: "SELL", src: b.label, succ: sc, t2: nx ? "Hedged ATM straddle · " + nx : S.q ? "Done for today" : "…",
+      t3: `<b class="neg-t">SL: each sold leg +${fmt(p.sl * 100, 0)}%</b> · <b class="pos-t">TG: keep the decay, exit 15:15</b> · wings ±${p.wing} strikes`, go: "journalPanel" });
+  }
+  const card = (c, i) => `<div class="panel scard ${c.k}" style="--i:${i}" data-go="${c.go}" data-sym="${c.sym || ""}">
+      <div class="t1"><span class="tag ${c.info ? "info" : c.k === "wait" ? "info" : c.k}">${esc(c.tag)}</span>${c.best ? '<span class="tag best">★ BEST</span>' : ""}<span>${esc(c.src)}</span></div>
+      ${c.succ ? `<div class="sline">${c.succ}</div>` : ""}<div class="t2">${c.t2}</div><div class="t3">${c.t3}</div></div>`;
+  $("sigStrip").innerHTML = cards.map(card).join("");
+  $("bStrip").innerHTML = cards.filter(c => c.side === "buy").map(card).join("");         // same cards in the Buying tab
+  $("sStrip").innerHTML = cards.filter(c => c.side === "sell").map(card).join("");        // … and in the Selling tab
+  const sById = {}; for (const x of ((S.b && S.b.strategies) || [])) sById[x.id] = x;
+  const rank = {}; rankedStrategies().forEach((x, i) => rank[x.id] = i);
+  const c2 = sg.slice().sort((x, y) => (rank[x.strategy] ?? 9) - (rank[y.strategy] ?? 9) || x.cost - y.cost).map(x => ({ k: x.kind === "CE" ? "buy" : "sell", tag: "BUY " + x.kind, src: x.strategy_label, sym: x.sym, go: "buyPanel",
+    succ: sById[x.strategy] ? succ(sById[x.strategy]) : "", t2: `${esc(contract(x))} · exp ${esc(x.expiry)}`,
+    t3: `₹${fmt(x.price)} × ${x.lot} = ${inr(x.cost)}<br><b class="neg-t">SL ₹${fmt(x.stop)}</b> · <b class="pos-t">${x.target ? "TG ₹" + fmt(x.target) : "no target"}</b> · ≤ ${x.hold}d${greekTxt(x)}` }));
+  $("sigStrip2").innerHTML = c2.length ? c2.map(card).join("") : `<div class="panel scard wait"><div class="t2">No stock / index signal tonight</div><div class="t3">Every tested buying strategy is checked after the evening NSE data (≈ 19:00 IST).</div></div>`;
+  if (S.b && S.b.asof) $("sigHint").textContent = `tested strategies only · NSE data of ${S.b.asof} · option priced at that close · SL / TG on the option price`;
+  document.querySelectorAll("#sigStrip .scard, #sigStrip2 .scard, #bStrip .scard, #sStrip .scard").forEach(el => el.onclick = () => {
+    const tgt = $(el.dataset.go), sec = tgt.closest(".tabsec"); if (sec) setTab(sec.dataset.tab);
+    if (el.dataset.sym) { S.nsym = el.dataset.sym; renderScan(); }
+    setTimeout(() => tgt.scrollIntoView({ behavior: "smooth", block: "start" }), 30); });
+}
+
+/* ---------- big money ---------- */
+function renderBigMoney() {
+  const d = S.bm; if (!d || !d.rows || !d.rows.length) { $("bmTop").innerHTML = `<div class="sub">Fills after the first evening run.</div>`; return; }
+  const L = d.rows[d.rows.length - 1], cashDay = d.cash.length ? d.cash[d.cash.length - 1].day : null;
+  const cash = w => d.cash.filter(x => x.day === cashDay && x.who === w)[0];
+  const fii = cash("FII"), dii = cash("DII"), sm = L.smart, t = d.tone || {};
+  const smSig = sm === null ? "–" : sm >= 80 ? "BUY CE" : sm <= 20 ? "BUY PE" : "no signal";
+  $("bmHint").textContent = `NSE data for ${d.asof} · cash flows ${cashDay || "–"} · updated each evening`;
+  $("bmTop").innerHTML = `
+    <div><div class="k">Smart-money score (0 bearish · 100 bullish)</div><div class="v mono">${sm === null ? "–" : fmt(sm, 0)}</div><div class="gauge"><i style="left:${sm || 0}%"></i></div><div class="s">${smSig === "no signal" ? "between 20 and 80: no trade" : "signal: <b>" + smSig + "</b>"}</div></div>
+    <div><div class="k">FII cash market (₹ cr)</div><div class="v mono ${cls(fii && fii.net)}">${fii ? (fii.net > 0 ? "+" : "") + fmt(fii.net, 0) : "–"}</div><div class="s">${fii ? "bought " + fmt(fii.buy, 0) + " · sold " + fmt(fii.sell, 0) : "not published yet"}</div></div>
+    <div><div class="k">DII cash market (₹ cr)</div><div class="v mono ${cls(dii && dii.net)}">${dii ? (dii.net > 0 ? "+" : "") + fmt(dii.net, 0) : "–"}</div><div class="s">${dii ? "bought " + fmt(dii.buy, 0) + " · sold " + fmt(dii.sell, 0) : "not published yet"}</div></div>
+    <div><div class="k">FII index futures · long share</div><div class="v mono">${fmt(L.FII_fut_share, 1)}%</div><div class="s">net ${fmt(L.FII_fut_net, 0)} contracts (${L.FII_fut_net_chg > 0 ? "+" : ""}${fmt(L.FII_fut_net_chg, 0)} today)</div></div>
+    <div><div class="k">News tone (GDELT, 60-day rank)</div><div class="v mono">${t.last ? fmt(t.last.tone, 2) : "–"}</div><div class="s">${t.rank != null ? "rank " + fmt(t.rank * 100, 0) + " / 100 · context only" : "not loaded yet (free API is rate-limited)"}</div></div>`;
+  const pr = (d.research || []).filter(x => /^(FII|DII|Pro|Client) /.test(x.test));
+  const best = pr.filter(x => x.tr_pf > 1 && x.te_pf > 1).sort((a, b) => b.te_pf - a.te_pf).slice(0, 4);
+  const nr = d.news_research || {};
+  $("bmCallout").innerHTML = `<b>What the research says (buy ATM, stop 30%, up to 5 days, real NSE prices):</b> the big players' positions <i>do</i> carry information. ` +
+    `Best stand-alone measures in both 2022–24 and 2025–26: ${best.map(x => `${esc(x.test.replace(" alone", "").replace("_rk", "").replace(/_/g, " "))} (PF ${fmt(x.tr_pf)} → ${fmt(x.te_pf)})`).join(", ")}. ` +
+    `The popular "FII futures long %" alone did <b>not</b> work (PF 0.70 in 2022–24). The 5 best measures from 2022–24 combined into the smart-money score: PF 2.3 → <b>4.6</b> on unseen 2025–26 (₹20k → ₹1.34 L), but only ≈1 trade a month. ` +
+    (nr.standalone ? `News: following a 60-day extreme in market-news tone was right ${fmt(nr.standalone.right, 0)}% of the time (PF ${fmt(nr.standalone.tr_pf)} → ${fmt(nr.standalone.te_pf)}), but using news to filter the OI trades made them <b>worse</b> (PF ${fmt(nr.filter_oi.alone)} → ${fmt(nr.filter_oi.skip_against)}), so news is shown as context, not used as a rule.` : "");
+  const rows = d.rows.slice(-12).reverse();
+  const net = v => v === null ? "–" : `<span class="${cls(v)}">${v > 0 ? "+" : ""}${fmt(v, 0)}</span>`;
+  $("bmTbl").innerHTML = `<thead><tr><th>Day</th><th>Nifty</th><th>Smart score</th><th>FII fut long %</th><th>FII fut Δ</th><th>FII options net</th><th>DII fut long %</th><th>DII fut Δ</th><th>Pro options net</th><th>Retail fut long %</th><th>Retail options net</th></tr></thead><tbody>` +
+    rows.map(r => `<tr><td class="mono">${esc(r.day)}</td><td class="mono">${fmt(r.nifty)}</td><td class="mono"><b>${r.smart === null ? "–" : fmt(r.smart, 0)}</b></td><td class="mono">${fmt(r.FII_fut_share, 1)}</td><td class="mono">${net(r.FII_fut_net_chg)}</td><td class="mono">${net(r.FII_opt_net)}</td>
+      <td class="mono">${fmt(r.DII_fut_share, 1)}</td><td class="mono">${net(r.DII_fut_net_chg)}</td><td class="mono">${net(r.Pro_opt_net)}</td><td class="mono">${fmt(r.Client_fut_share, 1)}</td><td class="mono">${net(r.Client_opt_net)}</td></tr>`).join("") + `</tbody>`;
+}
+async function pullBigMoney() { try { S.bm = await getJSON("/api/bigmoney"); renderBigMoney(); } catch (e) {} setTimeout(pullBigMoney, 300000); }
+async function pullBuying() { try { const first = !S.b; S.b = await getJSON("/api/buying"); renderBuying(); renderSignals(); if (first) { renderChartFilters(); renderSide(); loadChart(false); } } catch (e) {} setTimeout(pullBuying, S.ov && S.ov.market.open ? 10000 : 60000); }
+async function pullScan() { try { S.sc = await getJSON("/api/scan"); renderScan(); renderSignals(); } catch (e) {} setTimeout(pullScan, 120000); }
+
+/* ---------- tabs ---------- */
+function setTab(t) {
+  S.tab = t; storeSet("utab", t); try { history.replaceState(null, "", "#" + t); } catch (e) {}
+  document.querySelectorAll("#tabsnav button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+  document.querySelectorAll(".tabsec").forEach(el => el.classList.toggle("hide", el.dataset.tab !== t));
+  const slot = document.querySelector(`.chartslot[data-slot="${t}"]`);
+  if (slot && $("mainChart").parentElement !== slot) slot.appendChild($("mainChart"));
+  if (t === "buying" && !["NIFTY", "BANKNIFTY"].includes(S.ix)) { select("NIFTY"); }
+  if (t === "buying" && S.prevTab !== "buying" && ["5m", "15m"].includes(S.tf)) {   // daily signals read best on daily candles
+    S.tf = "1D"; S.range = "1Y"; buildSeg("tfSeg", ["5m", "15m", "1h", "1D"], S.tf, setTf); buildSeg("rangeSeg", ["1D", "1W", "1M", "3M", "1Y", "ALL"], S.range, setRange);
+  }
+  if (t !== "buying" && S.prevTab === "buying" && S.tf === "1D") {
+    S.tf = "15m"; S.range = "1M"; buildSeg("tfSeg", ["5m", "15m", "1h", "1D"], S.tf, setTf); buildSeg("rangeSeg", ["1D", "1W", "1M", "3M", "1Y", "ALL"], S.range, setRange);
+  }
+  S.prevTab = t;
+  if (slot) { renderChartFilters(); renderSide(); if (chart) setTimeout(() => { chart.applyOptions({ width: $("chart").clientWidth }); loadChart(false); }, 30); }
+}
+document.querySelectorAll("#tabsnav button").forEach(b => b.onclick = () => { setTab(b.dataset.tab); window.scrollTo({ top: 0 }); });
 /* ---------- polling ---------- */
 async function pullOverview() { try { S.ov = await getJSON("/api/overview"); S.lastOk = Date.now(); renderTop(); renderSide(); } catch (e) {} setTimeout(pullOverview, 60000); }
 async function pullQuotes() {
   try { S.q = await getJSON("/api/quotes"); S.lastOk = Date.now();
     if (!S.ix) select(storeGet("uix") && S.q.find(q => q.name === storeGet("uix")) ? storeGet("uix") : S.q[0].name); renderTickers(); renderTop();
-    if (!S.todayQ && S.paper) { S.todayQ = 1; renderToday(); } } catch (e) {}
+    if (!S.todayQ && S.paper) { S.todayQ = 1; renderToday(); renderSignals(); } } catch (e) {}
   setTimeout(pullQuotes, S.ov && S.ov.market.open ? 15000 : 60000);
+}
+// live ticks every 2 s while the market is open (like delta_bot): tiles + the chart's forming candle update in place
+async function pullLive() {
+  const open = S.ov && S.ov.market.open;
+  if (open && S.ix && !document.hidden) {
+    try {
+      const d = await getJSON(`/api/live?index=${encodeURIComponent(S.ix)}&tf=${encodeURIComponent(S.tf)}`);
+      S.live = d; S.lastOk = Date.now();
+      if (S.ov && d.market) S.ov.market = d.market;
+      if (S.q) for (const t of S.q) {
+        const x = d.ticks[t.name]; if (!x || x.last === null) continue;
+        t.last = x.last; if (x.high !== null) t.high = x.high; if (x.low !== null) t.low = x.low; if (x.chg !== null) t.chg = x.chg;
+        if (t.spark && t.spark.length) t.spark[t.spark.length - 1] = x.last;
+      }
+      renderTickers(); renderTop();
+      const f = d.forming;
+      if (f && candleS && S.chartLast && S.chartKey === S.ix + S.tf + S.range) {
+        const t = f.time + IST;
+        if (t > S.chartLast) loadChart(false);                      // a new candle started: reload (markers, EMAs)
+        else if (t === S.chartLast) candleS.update({ time: t, open: f.open, high: f.high, low: f.low, close: f.close });
+      }
+    } catch (e) { /* the connection pill shows the state */ }
+  }
+  setTimeout(pullLive, open ? 2000 : 30000);
 }
 async function pullPaper() {
   try { const d = await getJSON("/api/paper"), txt = JSON.stringify(d);
-    if (txt !== S.paperTxt) { S.paperTxt = txt; S.paper = d; renderPaper(); renderToday(); } } catch (e) {}   // redraw only on change
+    if (txt !== S.paperTxt) { S.paperTxt = txt; S.paper = d; renderPaper(); renderToday(); renderSignals(); } } catch (e) {}   // redraw only on change
   setTimeout(pullPaper, 15000);
 }
-async function pullHistory() { try { S.h = await getJSON("/api/history"); renderHistory(); setTimeout(pullHistory, S.h.state === "ready" ? 1800000 : 3000); } catch (e) { setTimeout(pullHistory, 10000); } }
+async function pullHistory() { try { const was = S.h && S.h.state; S.h = await getJSON("/api/history"); renderHistory(); renderSignals(); if (was !== S.h.state || !was) { renderChartFilters(); if (S.tab === "selling") loadChart(false); } setTimeout(pullHistory, S.h.state === "ready" ? 1800000 : 3000); } catch (e) { setTimeout(pullHistory, 10000); } }
 async function pullResearch() { try { S.r = await getJSON("/api/research"); renderResearch(); } catch (e) {} }
-setInterval(() => { renderTop(); if (S.ov && S.ov.market.open) loadChart(false); }, 30000);
+setInterval(renderTop, 1000);
+setInterval(() => { if (S.ov && S.ov.market.open) loadChart(false); }, 60000);          // full refresh (EMAs, markers); pullLive does the ticks
 
 skel("tickers", 5, 118); skel("today", 2, 140); skel("books", 3, 120); skelRows("jTbl", 4); skel("hGrid", 4, 150); skelRows("hTbl", 8); skelRows("rTbl", 6);
 initChart();
-pullOverview().then(() => { pullQuotes(); pullPaper(); pullResearch(); pullHistory(); });
+pullOverview().then(() => { pullQuotes().then(pullLive); pullPaper(); pullResearch(); pullHistory(); pullBuying(); pullScan(); pullBigMoney(); loadNews(); pullTv(); });
+const TABS = ["overview", "buying", "selling", "bigmoney", "news"], hashTab = location.hash.slice(1);
+setTab(TABS.includes(hashTab) ? hashTab : TABS.includes(storeGet("utab")) ? storeGet("utab") : "overview");
+setInterval(loadNews, 600000);
 </script>
 </body>
 </html>

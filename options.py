@@ -131,3 +131,15 @@ def charges(premium_value, side, exchange="NSE"):
     stamp = premium_value * STAMP_BUY if side == "buy" else 0.0
     gst = GST * (BROKERAGE + txn + sebi)
     return BROKERAGE + txn + sebi + stt + stamp + gst
+
+
+def greeks(spot, strike, t_years, vol, kind, r=RATE):
+    """Delta, gamma (per 1 point), theta (₹ per unit per TRADING day, negative = value lost to time) and vega
+    (₹ per unit per 1 volatility point) for one option. Numerical, from bs_price, so it matches our pricing."""
+    p = bs_price(spot, strike, t_years, vol, kind, r)
+    h = max(spot * 0.001, 0.5)
+    up, dn = bs_price(spot + h, strike, t_years, vol, kind, r), bs_price(spot - h, strike, t_years, vol, kind, r)
+    day = 1 / TRADING_DAYS
+    theta = (bs_price(spot, strike, max(t_years - day, 0.0), vol, kind, r) - p) if t_years > 0 else 0.0
+    vega = bs_price(spot, strike, t_years, vol + 0.01, kind, r) - p
+    return dict(delta=(up - dn) / (2 * h), gamma=(up - 2 * p + dn) / (h * h), theta=theta, vega=vega)

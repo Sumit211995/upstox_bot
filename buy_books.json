@@ -1,0 +1,27 @@
+{
+ "strategies": [
+  {"id": "idx-smart", "label": "Index · smart money (FII/DII)", "signal": "smart", "syms": ["NIFTY", "BANKNIFTY"], "priority": 1,
+   "params": {"smart_thr": 0.2, "sl": 0.5, "tp": null, "hold": 5, "offset": 0, "min_dte": 25},
+   "note": "Follows DII futures, FII options and the opposite of retail positions (NSE participant data). Buys ATM when the combined score is in its top / bottom 20% of 60 days."},
+  {"id": "idx-breakout", "label": "Index · 20-day breakout (1:2)", "signal": "breakout", "syms": ["NIFTY", "BANKNIFTY"], "priority": 2,
+   "params": {"adx": 0, "sl": 0.35, "tp": 0.7, "hold": 8, "offset": 1, "min_dte": 25},
+   "note": "Close above the highest high of the last 20 days → CE (below the lowest low → PE). 1 strike in the money. Stop −35%, target +70% (1:2)."},
+  {"id": "idx-emax", "label": "Index · EMA 9/21 cross (1:2)", "signal": "emax", "syms": ["NIFTY", "BANKNIFTY"], "priority": 3,
+   "params": {"sl": 0.25, "tp": 0.5, "hold": 3, "offset": 1, "min_dte": 25},
+   "note": "EMA 9 crosses EMA 21 in the direction of EMA 50. 1 strike in the money. Stop −25%, target +50% (1:2), max 3 days."},
+  {"id": "stk-smart", "label": "Stocks · smart money (FII/DII)", "signal": "smart", "syms": "STOCKS", "priority": 4,
+   "params": {"smart_thr": 0.2, "sl": 0.3, "tp": null, "hold": 5, "offset": 1, "min_dte": 25, "vix_max_rank": 0.8},
+   "note": "Same market-wide smart-money score, applied to the 20 large F&O stocks (monthly options). Skipped when India VIX is in the top 20% of its last 60 days (options too expensive): PF 1.51 → 1.99 in 2025–26."},
+  {"id": "idx-oi", "label": "Index · OI-extreme (your 30:70 idea)", "signal": "oi", "syms": ["NIFTY", "BANKNIFTY"], "priority": 9, "combined": false,
+   "params": {"mode": "pct", "thr": 0.1, "band": 2, "sl": 0.3, "tp": null, "hold": 5, "offset": 0, "min_dte": 15},
+   "note": "Call:put OI within ±2% of the price at a 60-day extreme → buy the side with less OI. Works with these exact settings but is sensitive to them: shown, not used in the combined accounts."}
+ ],
+ "accounts": [
+  {"id": "acct-20k", "label": "All buying signals · ₹20k (spreads)", "capital": 20000, "max_pos": 2, "budget": 7000, "index_spread": 6,
+   "start": "2026-11-12", "members": ["idx-smart", "idx-breakout", "idx-emax", "stk-smart"],
+   "note": "Recommended start. Up to 2 positions of ≈ ₹7k. Index signals as debit spreads (buy ATM, sell 6 strikes out), stock signals as 1 option. Started-any-month test: 74% of 12-month runs ended in profit."},
+  {"id": "acct-50k", "label": "All buying signals · ₹50k", "capital": 50000, "max_pos": 2, "budget": 20000, "index_spread": 0,
+   "start": "2026-11-12", "members": ["idx-smart", "idx-breakout", "idx-emax", "stk-smart"],
+   "note": "Same signals as plain option buys (≈ ₹15–20k each, up to 2 at once). Higher reward: 2025–26 win 48%, PF 2.4; 87% of 12-month runs ended in profit."}
+ ]
+}

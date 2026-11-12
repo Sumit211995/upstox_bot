@@ -78,7 +78,8 @@ def fetch_range(key, start: date, end: date, unit="minutes", n=5):
 def intraday(key, n=5):
     """Today's candles so far (the last one may still be forming)."""
     url = f"{API}/intraday/{quote(key, safe='')}/minutes/{n}"
-    return _frame(_get(url)["data"]["candles"])
+    # Upstox returns today's candles NEWEST FIRST: sort oldest → newest so iloc[-1] is the latest candle
+    return _frame(_get(url)["data"]["candles"]).sort_values("time").reset_index(drop=True)
 
 
 def history(key, n=5, progress=None):
@@ -115,6 +116,23 @@ def resample(df5, minutes):
     out = out.dropna(subset=["open"]).reset_index(drop=True)
     out["time"] = out["time"].astype("int64")
     return out
+
+
+def vix_daily():
+    """India VIX daily closes since Sep 2021 (cached in data/vix_daily.pkl, topped up with new days). Columns: day, close."""
+    path = DATA / "vix_daily.pkl"
+    with _lock:
+        df = pd.read_pickle(path) if path.exists() else None
+        today = datetime.now(IST).date()
+        start = date(2021, 9, 1) if df is None or df.empty else df["day"].iloc[-1]
+        if df is None or start < today:
+            new = fetch_range(VIX_KEY, start, today, unit="days", n=1)
+            new["day"] = pd.to_datetime(new["time"], unit="s", utc=True).dt.tz_convert("Asia/Kolkata").dt.date
+            df = new if df is None else pd.concat([df, new])
+            df = df.drop_duplicates("day", keep="last").sort_values("day").reset_index(drop=True)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            df.to_pickle(path)
+        return df
 
 
 # ------------------------------------------------------------------ contract list (lot size, expiries, strikes)

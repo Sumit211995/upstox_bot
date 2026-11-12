@@ -1,0 +1,195 @@
+{
+ "members": [
+  {
+   "name": "Index smart money",
+   "signal": "smart",
+   "syms": [
+    "NIFTY",
+    "BANKNIFTY"
+   ],
+   "params": {
+    "smart_thr": 0.2,
+    "sl": 0.5,
+    "tp": null,
+    "hold": 5,
+    "offset": 0,
+    "min_dte": 25
+   }
+  },
+  {
+   "name": "Index 20-day breakout 1:2",
+   "signal": "breakout",
+   "syms": [
+    "NIFTY",
+    "BANKNIFTY"
+   ],
+   "params": {
+    "adx": 0,
+    "sl": 0.35,
+    "tp": 0.7,
+    "hold": 8,
+    "offset": 1,
+    "min_dte": 25
+   }
+  },
+  {
+   "name": "Index EMA cross 1:2",
+   "signal": "emax",
+   "syms": [
+    "NIFTY",
+    "BANKNIFTY"
+   ],
+   "params": {
+    "sl": 0.25,
+    "tp": 0.5,
+    "hold": 3,
+    "offset": 1,
+    "min_dte": 25
+   }
+  },
+  {
+   "name": "Stock smart money",
+   "signal": "smart",
+   "syms": [
+    "RELIANCE",
+    "HDFCBANK",
+    "ICICIBANK",
+    "INFY",
+    "TCS",
+    "SBIN",
+    "AXISBANK",
+    "KOTAKBANK",
+    "LT",
+    "BHARTIARTL",
+    "ITC",
+    "BAJFINANCE",
+    "MARUTI",
+    "SUNPHARMA",
+    "HINDUNILVR",
+    "M&M",
+    "TATASTEEL",
+    "HCLTECH",
+    "TITAN",
+    "ADANIENT"
+   ],
+   "params": {
+    "smart_thr": 0.2,
+    "sl": 0.3,
+    "tp": null,
+    "hold": 5,
+    "offset": 1,
+    "min_dte": 25
+   }
+  }
+ ],
+ "results": {
+  "20000_train": {
+   "n": 55,
+   "win": 52.7,
+   "pf": 2.47,
+   "net": 203091.0,
+   "avg": 3693.0,
+   "worst": -10296.0,
+   "best": 40255.0,
+   "maxdd": 50887.0,
+   "end": 223091.0,
+   "min": 20000,
+   "by": {
+    "Index 20-day breakout 1:2": 23,
+    "Stock smart money": 13,
+    "Index smart money": 12,
+    "Index EMA cross 1:2": 7
+   }
+  },
+  "20000_test": {
+   "n": 34,
+   "win": 44.1,
+   "pf": 1.5,
+   "net": 53878.0,
+   "avg": 1585.0,
+   "worst": -10045.0,
+   "best": 16075.0,
+   "maxdd": 32996.0,
+   "end": 73878.0,
+   "min": 20000,
+   "by": {
+    "Index 20-day breakout 1:2": 13,
+    "Stock smart money": 8,
+    "Index EMA cross 1:2": 8,
+    "Index smart money": 6
+   }
+  },
+  "50000_train": {
+   "n": 90,
+   "win": 53.3,
+   "pf": 2.38,
+   "net": 305274.0,
+   "avg": 3392.0,
+   "worst": -10296.0,
+   "best": 40255.0,
+   "maxdd": 75202.0,
+   "end": 355274.0,
+   "min": 50000,
+   "by": {
+    "Stock smart money": 35,
+    "Index 20-day breakout 1:2": 28,
+    "Index smart money": 16,
+    "Index EMA cross 1:2": 11
+   }
+  },
+  "50000_test": {
+   "n": 53,
+   "win": 49.1,
+   "pf": 2.41,
+   "net": 210841.0,
+   "avg": 3978.0,
+   "worst": -10045.0,
+   "best": 80737.0,
+   "maxdd": 36200.0,
+   "end": 260841.0,
+   "min": 50000,
+   "by": {
+    "Index 20-day breakout 1:2": 16,
+    "Stock smart money": 15,
+    "Index EMA cross 1:2": 12,
+    "Index smart money": 11
+   }
+  },
+  "100000_train": {
+   "n": 140,
+   "win": 50.0,
+   "pf": 2.02,
+   "net": 366485.0,
+   "avg": 2618.0,
+   "worst": -10296.0,
+   "best": 40255.0,
+   "maxdd": 113122.0,
+   "end": 466485.0,
+   "min": 100000,
+   "by": {
+    "Stock smart money": 84,
+    "Index 20-day breakout 1:2": 29,
+    "Index smart money": 17,
+    "Index EMA cross 1:2": 10
+   }
+  },
+  "100000_test": {
+   "n": 78,
+   "win": 44.9,
+   "pf": 1.98,
+   "net": 226507.0,
+   "avg": 2904.0,
+   "worst": -10045.0,
+   "best": 80737.0,
+   "maxdd": 61844.0,
+   "end": 326507.0,
+   "min": 100000,
+   "by": {
+    "Stock smart money": 40,
+    "Index 20-day breakout 1:2": 16,
+    "Index EMA cross 1:2": 12,
+    "Index smart money": 11
+   }
+  }
+ }
+}

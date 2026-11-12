@@ -17,6 +17,9 @@ import pandas as pd
 
 import engine
 import market
+import live
+import news
+import swing_bot
 from config import HERE, load_config
 
 CFG = load_config()
@@ -54,8 +57,10 @@ def market_state():
         return dict(open=False, text="Closed · weekend")
     if hm < 915:
         return dict(open=False, text="Pre-open · opens 09:15")
-    if hm < 1530:
+    if hm < 1515:
         return dict(open=True, text="Market open")
+    if hm < 1530:                                          # closing auction (from Aug 2026): indices stop updating
+        return dict(open=True, auction=True, text="Closing auction · index paused at 15:15, options still trade")
     return dict(open=False, text="Closed · opens 09:15 next trading day")
 
 
@@ -65,7 +70,7 @@ def hist(key):
 
 
 def today(key):
-    return cached(f"intra|{key}", 15, lambda: market.intraday(key))
+    return cached(f"intra|{key}", 5, lambda: market.intraday(key))       # 5 s: the live candle needs fresh buckets
 
 
 def quote(name):
@@ -86,7 +91,7 @@ def quote(name):
         prev_close = float(prev["close"].iloc[-1]) if len(prev) else None
     out = dict(name=name, label="India VIX" if name == "VIX" else market.INDICES[name]["label"], last=num(last),
                chg=num(100 * (last / prev_close - 1)) if prev_close else None, high=num(hi), low=num(lo),
-               spark=[num(x) for x in spark[-75:]], asof=asof)
+               spark=[num(x) for x in spark[-75:]], asof=asof, prev_close=num(prev_close))
     if name != "VIX":
         info = market.INDICES[name]
         out.update(lot=info["lot"], step=info["step"], exchange=info["exchange"])
@@ -101,6 +106,44 @@ def quote(name):
 
 def quotes():
     return cached("quotes", 15, lambda: [quote(n) for n in list(CFG.indices) + ["VIX"]])
+
+
+# ------------------------------------------------------------------ live ticks (polled every 2 s like delta_bot)
+def live_ticks(name, tf):
+    """Latest price of every index + VIX and the chart's still-forming candle. With the Upstox token the price is the
+    real last traded value (1 s cache); without it, the latest 1-minute candle (≈ 1 minute behind)."""
+    names = list(CFG.indices) + ["VIX"]
+    keys = {n: market.VIX_KEY if n == "VIX" else market.INDICES[n]["key"] for n in names}
+    out = dict(server_time=time.time(), source="estimate", ticks={}, forming=None, market=market_state())
+    q = live.quotes(list(keys.values())) if out["market"]["open"] else None
+    if q:
+        out["source"] = "upstox"
+    base = {x["name"]: x for x in quotes()}                  # previous close / sparkline (15 s cache)
+    for n, k in keys.items():
+        b = base.get(n) or {}
+        x = (q or {}).get(k)
+        if x is None and out["market"]["open"]:
+            try:
+                m1 = cached(f"m1|{k}", 5, lambda k=k: market.intraday(k, n=1))
+                x = dict(last=float(m1["close"].iloc[-1]), high=float(m1["high"].max()), low=float(m1["low"].min())) if len(m1) else None
+            except Exception:
+                x = None
+        if x is None:
+            x = dict(last=b.get("last"), high=b.get("high"), low=b.get("low"))
+        last, prev = x.get("last"), b.get("prev_close")
+        out["ticks"][n] = dict(last=num(last), high=num(x.get("high") or b.get("high")), low=num(x.get("low") or b.get("low")),
+                               chg=num(100 * (last / prev - 1)) if last and prev else b.get("chg"))
+    if name in CFG.indices and tf in TF_MIN and out["market"]["open"]:
+        try:
+            d = today(market.INDICES[name]["key"])
+            if len(d):
+                bars = d[["time", "open", "high", "low", "close"]] if tf == "5m" else market.resample(d[["time", "open", "high", "low", "close"]], TF_MIN[tf])
+                r = bars.iloc[-1]
+                last = out["ticks"][name]["last"] or float(r.close)
+                out["forming"] = dict(time=int(r.time), open=num(r.open), high=num(max(r.high, last)), low=num(min(r.low, last)), close=num(last))
+        except Exception:
+            pass
+    return out
 
 
 # ------------------------------------------------------------------ chart
@@ -239,6 +282,80 @@ def research():
     return dict(best=best, calib=calib, split="2025-01-01")
 
 
+# ------------------------------------------------------------------ option BUYING books (evening job output)
+def _jread(path, default):
+    try:
+        return json.loads(Path(path).read_text())
+    except Exception:
+        return default
+
+
+def buying():
+    """Option-buying: combined paper accounts (state/buy_<id>.json, live estimate for open positions during market
+    hours), every strategy's backtest (research/out/buy_history.json) and tonight's signals (state/buy_signals.json)."""
+    def load():
+        hist = _jread(RESEARCH / "buy_history.json", {})
+        strats, accounts = swing_bot.load_books()
+        sig = _jread(HERE / "state" / "buy_signals.json", {})
+        live_on = market_state()["open"]
+        accts = []
+        for ac in accounts:
+            st = _jread(HERE / "state" / f"buy_{ac['id']}.json", {})
+            tr = st.get("trades", [])
+            open_ = [t for t in tr if t.get("reason") == "open"]
+            if live_on:
+                for t in open_:
+                    try:
+                        t["live"] = live.mark(t, st.get("asof"), t.get("ref_spot"))
+                    except Exception:
+                        t["live"] = None
+            closed = [t for t in tr if t.get("reason") != "open"]
+            h = hist.get("accounts", {}).get(ac["id"], {})
+            accts.append(dict(ac, equity=st.get("equity", ac["capital"]), cash=st.get("cash"), asof=st.get("asof"),
+                              plan=st.get("plan") or [], open=open_, closed=closed[::-1], n=len(closed),
+                              wins=sum(t["pnl"] > 0 for t in closed), net=round(sum(t["pnl"] for t in closed), 0),
+                              live_pnl=round(sum((t.get("live") or {}).get("pnl", 0) for t in open_), 0) if live_on else None,
+                              bt={k: h.get(k) for k in ("train", "test", "all", "rolling", "years")}, bt_trades=h.get("trades", [])))
+        ss = []
+        for x in strats:
+            h = hist.get("strategies", {}).get(x["id"], {})
+            ss.append(dict(id=x["id"], label=x["label"], note=x.get("note", ""), params=x["params"], combined=x.get("combined", True),
+                           syms=x["syms"] if len(x["syms"]) < 5 else ["20 stocks"], train=h.get("train"), test=h.get("test"),
+                           years=h.get("years", {}), trades=h.get("trades", [])))
+        return dict(accounts=accts, strategies=ss, signals=sig.get("signals", []), asof=sig.get("asof"),
+                    families=hist.get("families", {}), split=hist.get("split"), live=live_on)
+    return cached("buying", 20, load)
+
+
+def scanner():
+    return cached("scan", 30, lambda: _jread(HERE / "state" / "oi_scan.json", {}))
+
+
+def headlines(sym):
+    sym = sym if sym in news.QUERY or sym == "_market" else "_market"
+    h = news.headlines(sym)
+    return dict(sym=sym, items=h, mood=dict(score=sum(x["mood"] for x in h),
+                                            label=("positive" if sum(x["mood"] for x in h) >= 2 else
+                                                   "negative" if sum(x["mood"] for x in h) <= -2 else "neutral")))
+
+
+def bigmoney():
+    def load():
+        d = _jread(HERE / "state" / "bigmoney.json", {})
+        h = _jread(RESEARCH / "buy_history.json", {})
+        t = news.tone()
+        return dict(d, tone=dict(last=t.get("last"), rank=t.get("rank"), series=(t.get("series") or [])[-60:]),
+                    research=h.get("participants", []), news_research=h.get("news", {}))
+    return cached("bigmoney", 60, load)
+
+
+def channel_news(src):
+    items = news.channel(src if src in news.CHANNELS else "all")
+    sc = sum(x["mood"] for x in items)
+    return dict(src=src, items=items, channels={k: v[0] for k, v in news.CHANNELS.items()}, live_tv=news.LIVE_TV,
+                mood=dict(score=sc, label="positive" if sc >= 3 else "negative" if sc <= -3 else "neutral"))
+
+
 def overview():
     return dict(mode="PAPER", market=market_state(), indices=list(CFG.indices), capital=CFG.capital, lots=CFG.lots,
                 books=[dict(id=b["id"], label=b["label"], index=b["index"], family=b["family"], params=b["params"],
@@ -247,30 +364,60 @@ def overview():
 
 
 # ------------------------------------------------------------------ http
+# Read-only page: lock it down. Only our own scripts + the chart library, Google fonts, and YouTube-nocookie frames.
+SECURITY_HEADERS = {
+    "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; "
+                               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; "
+                               "img-src 'self' data:; connect-src 'self'; frame-src https://www.youtube-nocookie.com; "
+                               "frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+}
+ALLOWED_PARAMS = {"index", "tf", "range", "sym", "src"}
+
+
 class Handler(BaseHTTPRequestHandler):
+    server_version = "dashboard"
+    sys_version = ""
     def _send(self, code, body, ctype):
         data = body.encode() if isinstance(body, str) else body
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Cache-Control", "no-store")
+        for k, v in SECURITY_HEADERS.items():
+            self.send_header(k, v)
         self.end_headers()
         self.wfile.write(data)
 
     def do_GET(self):
         u = urlparse(self.path)
-        q = {k: v[0] for k, v in parse_qs(u.query).items()}
+        q = {k: v[0][:40] for k, v in parse_qs(u.query).items() if k in ALLOWED_PARAMS}   # ignore anything else
         try:
             if u.path in ("/", "/index.html"):
                 return self._send(200, (HERE / "dashboard.html").read_text(), "text/html; charset=utf-8")
-            routes = {"/api/overview": overview, "/api/quotes": quotes, "/api/paper": paper,
+            routes = {"/api/live": lambda: live_ticks(q.get("index", ""), q.get("tf", "")),
+                      "/api/overview": overview, "/api/quotes": quotes, "/api/paper": paper,
                       "/api/history": strategy_history, "/api/research": research,
-                      "/api/chart": lambda: chart(q.get("index", CFG.indices[0]), q.get("tf", "15m"), q.get("range", "1M"))}
+                      "/api/buying": buying, "/api/scan": scanner, "/api/bigmoney": bigmoney,
+                      "/api/channels": lambda: channel_news(q.get("src", "all")),
+                      "/api/livetv": lambda: cached("livetv", 300, news.live_tv),
+                      "/api/news": lambda: headlines(q.get("sym", "_market")),
+                      "/api/chart": lambda: chart(q.get("index") if q.get("index") in CFG.indices else CFG.indices[0],
+                                                  q.get("tf") if q.get("tf") in TF_MIN else "15m",
+                                                  q.get("range") if q.get("range") in RANGE_DAYS else "1M")}
             if u.path in routes:
                 return self._send(200, json.dumps(routes[u.path](), default=str), "application/json")
             self._send(404, "not found", "text/plain")
-        except Exception as e:
-            self._send(500, json.dumps(dict(error=str(e)[:300])), "application/json")
+        except Exception as e:                            # no stack traces / paths to the browser
+            self._send(500, json.dumps(dict(error=type(e).__name__)), "application/json")
+
+    def do_POST(self):                                    # read-only: nothing can be changed through the page
+        self._send(405, "read-only", "text/plain")
+
+    do_PUT = do_DELETE = do_PATCH = do_POST
 
     def log_message(self, *a):
         pass

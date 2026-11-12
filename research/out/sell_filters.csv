@@ -1,0 +1,133 @@
+book,filter,period,n,win,pf,net
+nifty-expiry,none,train,151,59.6,2.02,128676
+nifty-expiry,none,test,101,58.4,2.5,125282
+nifty-expiry,skip VIX rank < 20% (cheap premium),train,117,59.0,2.01,105002
+nifty-expiry,skip VIX rank < 20% (cheap premium),test,65,64.6,3.14,106620
+nifty-expiry,skip VIX rank > 80%,train,115,56.5,1.71,77268
+nifty-expiry,skip VIX rank > 80%,test,75,54.7,2.44,89075
+nifty-expiry,skip VIX > 20,train,129,58.9,2.17,114058
+nifty-expiry,skip VIX > 20,test,95,56.8,2.57,121442
+nifty-expiry,skip VIX < 12,train,121,61.2,2.26,130118
+nifty-expiry,skip VIX < 12,test,68,58.8,2.75,100169
+nifty-expiry,skip smart extreme (≤20/≥80),train,147,59.2,1.98,121905
+nifty-expiry,skip smart extreme (≤20/≥80),test,96,57.3,2.35,110476
+nifty-expiry,skip ADX > 30,train,118,56.8,1.6,68517
+nifty-expiry,skip ADX > 30,test,81,56.8,2.57,101142
+nifty-expiry,skip ADX > 25,train,92,55.4,1.57,53759
+nifty-expiry,skip ADX > 25,test,69,53.6,2.5,81604
+nifty-expiry,skip squeeze (narrow bands),train,118,61.0,1.98,107639
+nifty-expiry,skip squeeze (narrow bands),test,74,59.5,2.44,90635
+nifty-expiry,skip RSI extreme (<30/>70),train,134,57.5,1.83,96681
+nifty-expiry,skip RSI extreme (<30/>70),test,91,57.1,2.67,123082
+nifty-expiry,only smart neutral (35–65),train,100,58.0,2.04,84924
+nifty-expiry,only smart neutral (35–65),test,72,59.7,2.06,73565
+nifty-daily,none,train,723,68.6,1.91,344496
+nifty-daily,none,test,462,66.2,1.96,255027
+nifty-daily,skip VIX rank < 20% (cheap premium),train,545,67.7,1.86,264206
+nifty-daily,skip VIX rank < 20% (cheap premium),test,312,64.4,1.81,160315
+nifty-daily,skip VIX rank > 80%,train,560,68.6,1.99,271413
+nifty-daily,skip VIX rank > 80%,test,339,67.3,2.03,194806
+nifty-daily,skip VIX > 20,train,617,68.9,2.07,317888
+nifty-daily,skip VIX > 20,test,437,66.8,2.01,248478
+nifty-daily,skip VIX < 12,train,584,69.3,1.98,310378
+nifty-daily,skip VIX < 12,test,318,65.4,1.85,170170
+nifty-daily,skip smart extreme (≤20/≥80),train,685,68.9,1.92,333715
+nifty-daily,skip smart extreme (≤20/≥80),test,441,66.2,1.94,239181
+nifty-daily,skip ADX > 30,train,572,69.4,1.85,258434
+nifty-daily,skip ADX > 30,test,368,67.4,2.1,215519
+nifty-daily,skip ADX > 25,train,436,67.4,1.81,194443
+nifty-daily,skip ADX > 25,test,319,68.3,2.18,192222
+nifty-daily,skip squeeze (narrow bands),train,557,69.8,2.01,292856
+nifty-daily,skip squeeze (narrow bands),test,332,64.2,1.9,176988
+nifty-daily,skip RSI extreme (<30/>70),train,625,68.8,1.86,286541
+nifty-daily,skip RSI extreme (<30/>70),test,426,67.4,2.07,252937
+nifty-daily,only smart neutral (35–65),train,472,69.3,1.96,239431
+nifty-daily,only smart neutral (35–65),test,314,65.3,1.93,172376
+sensex-expiry,none,train,80,70.0,2.37,86476
+sensex-expiry,none,test,91,75.8,1.66,65472
+sensex-expiry,skip VIX rank < 20% (cheap premium),train,64,71.9,2.44,76090
+sensex-expiry,skip VIX rank < 20% (cheap premium),test,67,77.6,1.38,32932
+sensex-expiry,skip VIX rank > 80%,train,63,71.4,1.94,50503
+sensex-expiry,skip VIX rank > 80%,test,66,74.2,2.1,62248
+sensex-expiry,skip VIX > 20,train,78,69.2,2.15,72392
+sensex-expiry,skip VIX > 20,test,86,76.7,1.95,74183
+sensex-expiry,skip VIX < 12,train,54,64.8,1.93,57076
+sensex-expiry,skip VIX < 12,test,65,72.3,1.26,24978
+sensex-expiry,skip smart extreme (≤20/≥80),train,74,74.3,2.47,88375
+sensex-expiry,skip smart extreme (≤20/≥80),test,89,75.3,1.65,64529
+sensex-expiry,skip ADX > 30,train,63,73.0,2.37,74254
+sensex-expiry,skip ADX > 30,test,72,73.6,1.6,51211
+sensex-expiry,skip ADX > 25,train,48,70.8,2.41,65283
+sensex-expiry,skip ADX > 25,test,62,72.6,1.41,32478
+sensex-expiry,skip squeeze (narrow bands),train,63,69.8,2.85,82547
+sensex-expiry,skip squeeze (narrow bands),test,68,79.4,2.06,65587
+sensex-expiry,skip RSI extreme (<30/>70),train,65,70.8,2.16,67816
+sensex-expiry,skip RSI extreme (<30/>70),test,83,73.5,1.49,48081
+sensex-expiry,only smart neutral (35–65),train,54,75.9,2.97,74512
+sensex-expiry,only smart neutral (35–65),test,62,74.2,1.96,61320
+sensex-daily,none,train,405,59.5,1.79,124084
+sensex-daily,none,test,462,55.8,1.44,93871
+sensex-daily,skip VIX rank < 20% (cheap premium),train,328,60.4,2.1,128149
+sensex-daily,skip VIX rank < 20% (cheap premium),test,312,50.0,1.1,18167
+sensex-daily,skip VIX rank > 80%,train,294,61.2,1.61,73327
+sensex-daily,skip VIX rank > 80%,test,339,59.3,1.82,104364
+sensex-daily,skip VIX > 20,train,389,59.9,1.69,107424
+sensex-daily,skip VIX > 20,test,437,57.0,1.52,100130
+sensex-daily,skip VIX < 12,train,279,56.6,1.64,80879
+sensex-daily,skip VIX < 12,test,318,49.4,1.12,21947
+sensex-daily,skip smart extreme (≤20/≥80),train,383,60.3,1.83,125149
+sensex-daily,skip smart extreme (≤20/≥80),test,441,56.5,1.47,94683
+sensex-daily,skip ADX > 30,train,309,59.5,1.67,90639
+sensex-daily,skip ADX > 30,test,368,57.6,1.54,89615
+sensex-daily,skip ADX > 25,train,238,56.3,1.59,66230
+sensex-daily,skip ADX > 25,test,319,57.1,1.51,72988
+sensex-daily,skip squeeze (narrow bands),train,320,60.0,1.97,116299
+sensex-daily,skip squeeze (narrow bands),test,332,56.0,1.67,95472
+sensex-daily,skip RSI extreme (<30/>70),train,330,60.6,1.74,99666
+sensex-daily,skip RSI extreme (<30/>70),test,426,55.4,1.39,78253
+sensex-daily,only smart neutral (35–65),train,276,61.2,1.91,96455
+sensex-daily,only smart neutral (35–65),test,314,56.4,1.53,75584
+banknifty-expiry,none,train,155,51.6,2.47,213670
+banknifty-expiry,none,test,29,58.6,3.48,61599
+banknifty-expiry,skip VIX rank < 20% (cheap premium),train,116,51.7,2.29,157922
+banknifty-expiry,skip VIX rank < 20% (cheap premium),test,14,50.0,2.34,25582
+banknifty-expiry,skip VIX rank > 80%,train,120,50.8,2.23,146257
+banknifty-expiry,skip VIX rank > 80%,test,20,65.0,7.6,55474
+banknifty-expiry,skip VIX > 20,train,132,52.3,2.38,173673
+banknifty-expiry,skip VIX > 20,test,28,60.7,4.02,64914
+banknifty-expiry,skip VIX < 12,train,123,55.3,2.67,201390
+banknifty-expiry,skip VIX < 12,test,20,60.0,4.31,55667
+banknifty-expiry,skip smart extreme (≤20/≥80),train,151,51.0,2.37,199627
+banknifty-expiry,skip smart extreme (≤20/≥80),test,27,63.0,4.15,65595
+banknifty-expiry,skip ADX > 30,train,133,51.9,2.32,180902
+banknifty-expiry,skip ADX > 30,test,25,60.0,4.23,54377
+banknifty-expiry,skip ADX > 25,train,105,49.5,2.31,142160
+banknifty-expiry,skip ADX > 25,test,22,59.1,3.73,42170
+banknifty-expiry,skip squeeze (narrow bands),train,119,53.8,2.36,167932
+banknifty-expiry,skip squeeze (narrow bands),test,18,55.6,2.83,33675
+banknifty-expiry,skip RSI extreme (<30/>70),train,138,50.0,2.36,185476
+banknifty-expiry,skip RSI extreme (<30/>70),test,26,61.5,4.25,60914
+banknifty-expiry,only smart neutral (35–65),train,104,52.9,2.53,152039
+banknifty-expiry,only smart neutral (35–65),test,19,63.2,4.43,45214
+midcpnifty-expiry,none,train,149,67.8,4.75,359571
+midcpnifty-expiry,none,test,24,70.8,2.23,38675
+midcpnifty-expiry,skip VIX rank < 20% (cheap premium),train,104,64.4,5.55,267786
+midcpnifty-expiry,skip VIX rank < 20% (cheap premium),test,15,73.3,2.82,30108
+midcpnifty-expiry,skip VIX rank > 80%,train,121,65.3,3.63,234561
+midcpnifty-expiry,skip VIX rank > 80%,test,15,73.3,2.66,27485
+midcpnifty-expiry,skip VIX > 20,train,135,69.6,4.64,320098
+midcpnifty-expiry,skip VIX > 20,test,23,69.6,2.19,37323
+midcpnifty-expiry,skip VIX < 12,train,115,67.0,6.26,315607
+midcpnifty-expiry,skip VIX < 12,test,19,78.9,3.44,40557
+midcpnifty-expiry,skip smart extreme (≤20/≥80),train,142,66.9,4.6,333881
+midcpnifty-expiry,skip smart extreme (≤20/≥80),test,23,69.6,1.92,28992
+midcpnifty-expiry,skip ADX > 30,train,99,68.7,4.0,218838
+midcpnifty-expiry,skip ADX > 30,test,20,70.0,2.03,30294
+midcpnifty-expiry,skip ADX > 25,train,81,65.4,3.51,168122
+midcpnifty-expiry,skip ADX > 25,test,14,64.3,1.57,15562
+midcpnifty-expiry,skip squeeze (narrow bands),train,114,64.9,3.93,254534
+midcpnifty-expiry,skip squeeze (narrow bands),test,18,72.2,2.94,35779
+midcpnifty-expiry,skip RSI extreme (<30/>70),train,114,68.4,4.63,284188
+midcpnifty-expiry,skip RSI extreme (<30/>70),test,23,73.9,2.41,40955
+midcpnifty-expiry,only smart neutral (35–65),train,103,64.1,3.68,219936
+midcpnifty-expiry,only smart neutral (35–65),test,16,62.5,1.18,5306

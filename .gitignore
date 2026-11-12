@@ -17,3 +17,7 @@ __pycache__/
 .pytest_cache/
 .DS_Store
 docs/guide.html
+research/logs/
+research/out/buy_features.pkl
+research/out/participants.pkl
+research/out/buy_features_tech.pkl

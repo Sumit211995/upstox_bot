@@ -1,0 +1,50 @@
+test,tr_n,tr_pf,tr_net,te_n,te_pf,te_net
+OI-extreme alone (current book),149,1.92,421207.0,73,1.67,167694.0
+FII fut_share_rk alone,178,0.7,-208733.0,79,1.27,84787.0
+OI-extreme + FII fut_share_rk agrees,96,1.71,228082.0,40,1.51,74790.0
+FII fut_share_rk (opposite) alone,183,0.93,-45186.0,82,1.13,39590.0
+OI-extreme + FII fut_share_rk (opposite) agrees,81,1.57,149360.0,52,1.04,8231.0
+FII fut_net_chg_rk alone,187,1.15,99331.0,102,1.35,140464.0
+OI-extreme + FII fut_net_chg_rk agrees,111,1.64,221741.0,46,1.54,83899.0
+FII fut_net_chg_rk (opposite) alone,201,0.82,-142084.0,98,1.79,249837.0
+OI-extreme + FII fut_net_chg_rk (opposite) agrees,77,1.56,155289.0,45,1.88,136023.0
+FII opt_net_rk alone,206,1.32,219429.0,89,1.56,179196.0
+OI-extreme + FII opt_net_rk agrees,110,1.91,306057.0,43,2.07,165430.0
+FII opt_net_rk (opposite) alone,214,0.7,-248253.0,102,0.74,-101301.0
+OI-extreme + FII opt_net_rk (opposite) agrees,68,1.24,59138.0,43,0.66,-52469.0
+DII fut_share_rk alone,209,1.32,236639.0,79,2.17,311076.0
+OI-extreme + DII fut_share_rk agrees,89,1.62,176072.0,45,1.9,136880.0
+DII fut_share_rk (opposite) alone,220,0.61,-348856.0,103,0.86,-55195.0
+OI-extreme + DII fut_share_rk (opposite) agrees,87,1.64,186628.0,45,0.86,-22512.0
+DII fut_net_chg_rk alone,176,1.35,212521.0,95,1.77,260032.0
+OI-extreme + DII fut_net_chg_rk agrees,95,1.57,170697.0,48,1.78,122171.0
+DII fut_net_chg_rk (opposite) alone,198,0.64,-279116.0,98,0.67,-126508.0
+OI-extreme + DII fut_net_chg_rk (opposite) agrees,90,1.69,212077.0,47,0.95,-8427.0
+DII opt_net_rk alone,177,0.53,-316129.0,73,1.11,30985.0
+OI-extreme + DII opt_net_rk agrees,90,1.13,41549.0,52,1.26,49235.0
+DII opt_net_rk (opposite) alone,168,1.52,295608.0,75,1.26,68522.0
+OI-extreme + DII opt_net_rk (opposite) agrees,86,2.24,328099.0,40,1.77,102363.0
+Pro fut_share_rk alone,192,0.96,-26473.0,97,0.9,-35092.0
+OI-extreme + Pro fut_share_rk agrees,79,1.6,164910.0,55,1.1,19873.0
+Pro fut_share_rk (opposite) alone,191,0.88,-88343.0,96,1.53,179889.0
+OI-extreme + Pro fut_share_rk (opposite) agrees,95,1.69,204775.0,37,1.72,91690.0
+Pro fut_net_chg_rk alone,206,0.98,-17399.0,83,1.23,73303.0
+OI-extreme + Pro fut_net_chg_rk agrees,86,1.54,163034.0,46,2.01,159143.0
+Pro fut_net_chg_rk (opposite) alone,210,0.97,-23559.0,93,0.78,-71904.0
+OI-extreme + Pro fut_net_chg_rk (opposite) agrees,98,1.44,142033.0,53,1.12,23848.0
+Pro opt_net_rk alone,197,1.07,53101.0,95,1.81,258583.0
+OI-extreme + Pro opt_net_rk agrees,118,2.02,382694.0,45,1.73,111725.0
+Pro opt_net_rk (opposite) alone,206,0.58,-326216.0,105,0.41,-243167.0
+OI-extreme + Pro opt_net_rk (opposite) agrees,64,1.02,4869.0,46,1.42,70246.0
+Client fut_share_rk alone,178,0.69,-213851.0,93,1.0,15.0
+OI-extreme + Client fut_share_rk agrees,77,1.97,227387.0,52,0.88,-24031.0
+Client fut_share_rk (opposite) alone,164,1.12,64708.0,107,1.42,175127.0
+OI-extreme + Client fut_share_rk (opposite) agrees,105,1.37,136297.0,40,1.68,99867.0
+Client fut_net_chg_rk alone,188,0.78,-154146.0,95,1.06,20100.0
+OI-extreme + Client fut_net_chg_rk agrees,84,1.86,232174.0,44,1.38,60186.0
+Client fut_net_chg_rk (opposite) alone,182,1.36,222607.0,92,1.67,224605.0
+OI-extreme + Client fut_net_chg_rk (opposite) agrees,101,1.23,81209.0,53,1.81,148752.0
+Client opt_net_rk alone,196,0.62,-292865.0,108,0.56,-181644.0
+OI-extreme + Client opt_net_rk agrees,65,1.7,145068.0,44,0.86,-23865.0
+Client opt_net_rk (opposite) alone,199,1.13,97566.0,103,1.79,278386.0
+OI-extreme + Client opt_net_rk (opposite) agrees,119,1.56,224027.0,45,1.82,125837.0

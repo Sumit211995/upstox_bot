@@ -1,0 +1,13 @@
+{
+ "base": {
+  "mode": "pct",
+  "thr": 0.1,
+  "band": 2,
+  "offset": 0,
+  "sl": 0.3,
+  "tp": null,
+  "hold": 5,
+  "min_dte": 15
+ },
+ "neighbourhood_both_pct": 54.7
+}

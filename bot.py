@@ -7,6 +7,9 @@ saved to logs/paper_trades_<book>.csv; the live view (open trades + P&L) goes to
 Run:  python bot.py            (loop)
       python bot.py --once     (one pass, then exit)
       python bot.py --status   (paper results so far)
+      python bot.py --evening  (run the option-buying evening job now)
+
+Option-BUYING books (buy_books.json) run once each evening after NSE publishes the day's F&O file: see swing_bot.py.
 """
 import argparse
 import csv
@@ -19,6 +22,7 @@ import pandas as pd
 
 import engine
 import market
+import swing_bot
 from config import HERE, load_config
 from notifier import send
 
@@ -161,7 +165,33 @@ def day_summary(cfg, today):
         send(cfg, "🇮🇳 PAPER day summary " + today.strftime("%d %b") + "\n" + "\n".join(lines))
 
 
+def evening_job(cfg, now, done):
+    """Option-BUYING books: once a day after NSE publishes its F&O file (from 18:15 IST, retry every 15 min until
+    23:45). Returns the date it is finished for (today's file processed, or given up for a holiday)."""
+    if done == now.date() or now.hour * 100 + now.minute < 1815:
+        return done
+    last_try = getattr(evening_job, "last_try", 0)
+    if time.time() - last_try < 900:
+        return done
+    evening_job.last_try = time.time()
+    try:
+        last = swing_bot.run(cfg)
+        if last == now.date():
+            return now.date()
+    except Exception as e:
+        log.exception("evening job failed")
+        if now.hour * 100 + now.minute >= 2330:
+            send(cfg, f"🇮🇳 buying-books evening job failed: {str(e)[:300]}")
+    return now.date() if now.hour * 100 + now.minute >= 2345 else done
+
+
 def status(cfg):
+    for ac in swing_bot.load_books()[1]:
+        st = swing_bot._read(STATE / f"buy_{ac['id']}.json", {})
+        closed = [t for t in st.get("trades", []) if t["reason"] != "open"]
+        print(f"{ac['label']:<48} trades {len(closed):>4}  wins {sum(t['pnl'] > 0 for t in closed):>4}  "
+              f"account {fmt_inr(st.get('equity', ac['capital']))} (start {fmt_inr(ac['capital'])})"
+              + (f"  · plan: " + ", ".join(f"{c['sym']} {c['kind']}" for c in st['plan']) if st.get("plan") else ""))
     for book in cfg.books:
         path = journal_path(book["id"])
         rows = list(csv.DictReader(path.open())) if path.exists() else []
@@ -174,6 +204,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--once", action="store_true")
     ap.add_argument("--status", action="store_true")
+    ap.add_argument("--evening", action="store_true")
     a = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     cfg = load_config()
@@ -181,13 +212,22 @@ def main():
         raise SystemExit("No strategy books configured (books.json)")
     if a.status:
         return status(cfg)
+    if a.evening:
+        print("data up to", swing_bot.run(cfg))
+        return status(cfg)
     if a.once:
         res = poll(cfg)
         for k, v in res.items():
             print(k, [(t["side"], t["result"], t["pnl"]) for t in v])
         return
-    send(cfg, "🇮🇳 Upstox paper bot started · " + ", ".join(b["label"] for b in cfg.books) + " · no real orders")
-    summary_sent, errors = None, 0
+    send(cfg, "🇮🇳 Upstox paper bot started · " + ", ".join(b["label"] for b in cfg.books) + " · buying: "
+         + ", ".join(a["label"] for a in swing_bot.load_books()[1]) + " · no real orders")
+    summary_sent, errors, swing_done = None, 0, None
+    if not market_open():
+        try:
+            swing_bot.run(cfg)                                 # catch up the buying books at start-up
+        except Exception:
+            log.exception("start-up evening job failed")
     while True:
         try:
             now = now_ist()
@@ -197,6 +237,8 @@ def main():
             elif now.weekday() < 5 and now.hour * 100 + now.minute > 1535 and summary_sent != now.date():
                 day_summary(cfg, now.date())
                 summary_sent = now.date()
+            if not market_open(now):
+                swing_done = evening_job(cfg, now, swing_done)
             time.sleep(cfg.poll_seconds if market_open(now) else 60)
         except KeyboardInterrupt:
             send(cfg, "🇮🇳 Upstox paper bot stopped")
