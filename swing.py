@@ -362,28 +362,35 @@ def simulate(f, chain, family, p, lots_map, budget=20000.0, start=None, end=None
 
 
 def trade(chain, bars, menu, sym, sig_day, spot, kind, p, lot, slip, budget):
-    """One trade: signal on sig_day's close → buy at the next day's open → manage with daily high/low."""
+    """One trade: signal on sig_day's close → buy at the next day's open → manage with daily high/low.
+    p["at_close"]: buy at sig_day's CLOSE instead (a call given just before the close from the live price),
+    then manage from the next day on (gaps at the next open count)."""
     sl, tp, hold = p.get("sl", 0.4), p.get("tp", 1.0), p.get("hold", 3)
     d1 = chain.next.get(sig_day)
     if d1 is None or d1 not in menu:
         return None
+    at_close = bool(p.get("at_close"))
+    d0 = sig_day if at_close else d1                                # the day we pay for the option
+    if d0 not in menu:
+        return None
     offset = p.get("offset", 0)
     for step in range(4 if p.get("afford", True) else 1):           # step out of the money until 1 lot fits
-        c = pick_contract(menu[d1], d1, spot, kind, offset - step, p.get("min_dte", 7))
+        c = pick_contract(menu[d0], d0, spot, kind, offset - step, p.get("min_dte", 7))
         if c is None:
             return None
         e, k = c
-        b = bars.get((d1, e, k, kind))
+        b = bars.get((d0, e, k, kind))
         if b is None or not b[0] > 0 or not b[4] > 0:
             return None
-        entry = b[0] * (1 + slip)
+        entry = (b[3] if at_close else b[0]) * (1 + slip)
         if entry * lot <= budget:
             break
     if p.get("spread"):
-        return _spread(chain, bars, menu, sym, sig_day, spot, kind, p, lot, slip, budget, d1, e, k)
+        return _spread(chain, bars, menu, sym, sig_day, spot, kind, p, lot, slip, budget, d1, e, k, d0)
     if entry * lot > budget or entry < 1:
         return None
     stop, target = entry * (1 - sl), (entry * (1 + tp) if tp else None)
+    fresh = None if at_close else d1                                # the bought-at-open day has no gap
     day, n, exit_px, reason, last = d1, 0, None, None, None
     while day is not None:
         b = bars.get((day, e, k, kind))
@@ -391,9 +398,9 @@ def trade(chain, bars, menu, sym, sig_day, spot, kind, p, lot, slip, budget):
         if b is not None:
             o, h, l, cl = b[:4]
             last = (day, cl)
-            if day != d1 and 0 < o <= stop:
+            if day != fresh and 0 < o <= stop:
                 exit_px, reason = o, "stop (gap)"
-            elif day != d1 and target and o >= target:
+            elif day != fresh and target and o >= target:
                 exit_px, reason = o, "target (gap)"
             elif 0 < l <= stop:
                 exit_px, reason = stop, "stop"
@@ -415,24 +422,26 @@ def trade(chain, bars, menu, sym, sig_day, spot, kind, p, lot, slip, budget):
     exit_net = max(exit_px * (1 - slip), 0.0)
     chg = options.charges(entry * lot, "buy") + options.charges(exit_net * lot, "sell")
     pnl = (exit_net - entry) * lot - chg
-    return dict(sym=sym, signal_day=sig_day, entry_day=d1, exit_day=day, kind=kind, strike=k, expiry=e,
+    return dict(sym=sym, signal_day=sig_day, entry_day=d0, exit_day=day, kind=kind, strike=k, expiry=e,
                 spot=round(float(spot), 2), entry=round(entry, 2), exit=round(exit_net, 2), stop=round(stop, 2),
                 target=round(target, 2) if target else None, lot=int(lot), cost=round(entry * lot, 0),
                 charges=round(chg, 2), pnl=round(pnl, 2), ret=round(pnl / (entry * lot), 4), reason=reason, days=n)
 
 
-def _spread(chain, bars, menu, sym, sig_day, spot, kind, p, lot, slip, budget, d1, e, k):
+def _spread(chain, bars, menu, sym, sig_day, spot, kind, p, lot, slip, budget, d1, e, k, d0=None):
     """Debit spread: BUY strike k, SELL the strike `spread` steps further out of the money (same expiry).
     The spread's daily value is checked on CLOSING prices (a spread's intraday high/low is not in the data)."""
-    ks = menu[d1][(e, kind)]
+    d0 = d0 or d1
+    ks = menu[d0][(e, kind)]
     i = int(np.where(ks == k)[0][0]) + (p["spread"] if kind == "CE" else -p["spread"])
     if not 0 <= i < len(ks):
         return None
     k2 = float(ks[i])
-    b1, b2 = bars.get((d1, e, k, kind)), bars.get((d1, e, k2, kind))
-    if b2 is None or not b2[0] > 0 or not b2[4] > 0:
+    b1, b2 = bars.get((d0, e, k, kind)), bars.get((d0, e, k2, kind))
+    if b1 is None or b2 is None or not b2[0] > 0 or not b2[4] > 0:
         return None
-    debit = b1[0] * (1 + slip) - b2[0] * (1 - slip)
+    px = 3 if d0 != d1 else 0                                       # buy at the close (at_close) or the open
+    debit = b1[px] * (1 + slip) - b2[px] * (1 - slip)
     if debit < 1 or debit * lot > budget:
         return None
     sl, tp, hold = p.get("sl", 0.4), p.get("tp"), p.get("hold", 3)
@@ -466,7 +475,7 @@ def _spread(chain, bars, menu, sym, sig_day, spot, kind, p, lot, slip, budget, d
     chg = (options.charges(b1[0] * lot, "buy") + options.charges(b2[0] * lot, "sell") +
            options.charges(x1[3] * lot, "sell") + options.charges(x2[3] * lot, "buy"))
     pnl = (out - debit) * lot - chg
-    return dict(sym=sym, signal_day=sig_day, entry_day=d1, exit_day=day, kind=kind, strike=k, strike2=k2, expiry=e,
+    return dict(sym=sym, signal_day=sig_day, entry_day=d0, exit_day=day, kind=kind, strike=k, strike2=k2, expiry=e,
                 spot=round(float(spot), 2), entry=round(debit, 2), exit=round(out, 2), stop=round(stop, 2),
                 target=round(target, 2) if target else None, lot=int(lot), cost=round(debit * lot, 0),
                 charges=round(chg, 2), pnl=round(pnl, 2), ret=round(pnl / (debit * lot), 4), reason=reason, days=n)

@@ -1,0 +1,9 @@
+strategy,spread,entry,tr_n,tr_win,tr_pf,tr_net,te_n,te_win,te_pf,te_net
+idx-breakout,0,next open,36,52.8,2.27,148998.0,20,50.0,2.03,62807.0
+idx-breakout,0,close (live call),38,52.6,2.0,127546.0,21,33.3,0.91,-8640.0
+idx-breakout,6,next open,14,35.7,0.9,-3047.0,22,77.3,4.56,54210.0
+idx-breakout,6,close (live call),5,0.0,0.0,-11944.0,16,43.8,0.92,-1838.0
+idx-emax,0,next open,15,60.0,3.01,45494.0,15,40.0,1.31,9318.0
+idx-emax,0,close (live call),13,61.5,2.77,40321.0,13,30.8,0.5,-17751.0
+idx-emax,6,next open,8,50.0,0.98,-168.0,14,50.0,1.65,11011.0
+idx-emax,6,close (live call),6,66.7,3.96,9961.0,12,25.0,0.45,-9736.0
