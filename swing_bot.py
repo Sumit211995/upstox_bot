@@ -329,8 +329,12 @@ def run(cfg, today=None, notify=True):
         pk = "|".join(f"{c['sym']}{c['kind']}{c['signal_day']}" for c in plan)
         if plan and notify and old.get("plan_key") != pk:
             send(cfg, f"📋 PLAN for next session · {ac['label']}\n" + "\n".join(
-                f"BUY {contract_text(c)} at 09:15 · ≈ ₹{c['price']} × {c['lot']} = {inr(c['cost'])} · stop ₹{c['stop']}"
-                + (f" · target ₹{c['target']}" if c.get("target") else "") + f"\n  {c['strategy_label']}: {c['why']}" for c in plan)
+                f"BUY {contract_text(c)}\n  Entry: next 09:15 open · ≈ ₹{c['price']} × {c['lot']} = {inr(c['cost'])}"
+                f"\n  SL: ₹{c['stop']} (−{100 * c['sl_pct']:.0f}%)"
+                + (f"\n  Target: ₹{c['target']} (+{100 * c['tp_pct']:.0f}%)" if c.get("target")
+                   else f"\n  Target: none fixed · exit after {c.get('hold')} trading days")
+                + f"\n  Time: swing · up to {c.get('hold')} trading days"
+                + f"\n  {c['strategy_label']}: {c['why']}" for c in plan)
                 + "\nPaper only: no order is placed.")
         eq = ac["capital"] + closed_pnl
         sp.write_text(json.dumps(dict(asof=_iso(last), updated=int(time.time()), capital=ac["capital"], equity=eq,

@@ -116,6 +116,16 @@ def describe(book, t):
             f"index {t['spot0']:.1f}, stop {t['sl']:.1f}" + (f", target {t['tp']:.1f}" if t.get("tp") else ""))
 
 
+def levels_text(book, t):
+    """Entry / SL / target / time block for a selling entry (Telegram)."""
+    if book["family"] != "straddle":
+        return ""
+    sold = [l for l in t.get("legs", []) if l.get("side") == "SELL"]
+    sls = " · ".join(f"{l['strike']:.0f}{l['kind']} ₹{l['sl']:.1f}" for l in sold if l.get("sl"))
+    return (f"Entry: 10:00 · credit {fmt_inr(t['credit'])}\nSL: each sold leg +{100 * book['params']['sl']:.0f}% ({sls})"
+            f"\nTarget: keep the time decay · exit 15:15\nTime: intraday (today)")
+
+
 def process(cfg, book, trades, today):
     """Compare with what we knew last poll: alert new entries / exits, write closed trades to the journal."""
     sp = STATE / f"paper_{book['id']}.json"
@@ -126,7 +136,7 @@ def process(cfg, book, trades, today):
         k = str(t["t0"])
         before = st["seen"].get(k)
         if before is None:
-            send(cfg, f"🇮🇳 PAPER ENTRY · {book['label']}\n{describe(book, t)}\nwhy: {t.get('why', '')}")
+            send(cfg, f"🇮🇳 PAPER ENTRY · {book['label']}\n{describe(book, t)}\n{levels_text(book, t)}\nwhy: {t.get('why', '')}")
         if t["result"] != "open" and before != "closed":
             append_trade(book, t, today)
             send(cfg, f"🇮🇳 PAPER EXIT · {book['label']} · {t['result']}\n{describe(book, t)}\n"

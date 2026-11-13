@@ -10,7 +10,8 @@ OUT = Path(__file__).resolve().parent / "out"
 TR, TE, ALL = (date(2019, 1, 1), date(2023, 12, 31)), (date(2024, 1, 1), date(2026, 12, 31)), (date(2019, 1, 1), date(2026, 12, 31))
 frames = stocks.load_all(refresh=False); nifty = stocks.nifty_daily(refresh=False)
 prep = stocks.prepare(frames, stocks.market_filters(nifty, refresh=False))
-base = dict(kind="momentum", lookback=252, freq=21, max_pos=3, regime=True, vix_max=None, smart_min=None, max_hold=10 ** 9)
+base = dict(kind="momentum", lookback=252, freq=21, max_pos=3, regime=True, vix_max=None, smart_min=None, max_hold=10 ** 9,
+            stop_pct=0.15)                                     # protective stop (research/stock_stops.py)
 rows = []
 def run(name, p, cap=20000.0):
     a, b = stocks.stats(stocks.simulate(prep, p, *TR, cap)), stocks.stats(stocks.simulate(prep, p, *TE, cap))

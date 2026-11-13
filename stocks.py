@@ -219,7 +219,10 @@ def market_filters(nifty=None, refresh=True):
 # ------------------------------------------------------------------ strategies
 # Final paper rules: see research/stock_research.py and research/out/stock_summary.md (filled in by the research).
 FINAL = dict(kind="momentum", lookback=252, freq=21, max_pos=3, regime=True, vix_max=None, smart_min=None,
-             max_hold=10 ** 9, label="12-month momentum, top 3, monthly", win=50.0, pf=4.55)
+             max_hold=10 ** 9, label="12-month momentum, top 3, monthly", win=50.0, pf=4.55, stop_pct=0.15,
+             horizon="Swing · about 1–3 months (avg 45–50 days held, reviewed every 21 trading days)")
+# Stop −15% below the entry reference (research/stock_stops.py): 2019–23 PF 1.70 → 1.85, drawdown −30% → −28%;
+# 2024–26 unchanged (never hit). −10% looked better on 2019–23 alone but cut 2024–26 PF 4.55 → 3.78.
 # Research (research/stock_research.py + stock_final.py, ₹20k, real delivery charges): 2019–23 CAGR 17.5% (Nifty 14.8%),
 # max drawdown −30% (Nifty −38%); 2024–26 CAGR 23.0% (Nifty 5.4%), drawdown −18% (Nifty −16%). Pullback and breakout
 # rules LOST after costs in both periods. win / pf above are the 2024–26 (unseen) trade stats.
@@ -395,7 +398,8 @@ def _step(st, day, prep, events=None):
             held = {x["sym"] for x in st["positions"]}
             for x in ranked[:p["max_pos"]]:
                 if ok and x["sym"] not in held:
-                    st["pending_buy"].append(dict(sym=x["sym"], day=day, ref=x["ref"], stop=None, target=None, why=x["why"]))
+                    stop = x["ref"] * (1 - p["stop_pct"]) if p.get("stop_pct") else None   # optional protective stop
+                    st["pending_buy"].append(dict(sym=x["sym"], day=day, ref=x["ref"], stop=stop, target=None, why=x["why"]))
         st["equity"].append((day, round(_equity(st, rows, day), 2)))
         st["asof"], st["n"] = day, st["n"] + 1
         return st
@@ -528,7 +532,8 @@ def exit_rule_text(p):
         s = f"sell at the next open when {x}, or after {p['max_hold']} days"
         return s + (f"; stop {p['stop_atr']}× ATR below entry" if p.get("stop_atr") else "")
     if p["kind"] == "momentum":
-        return (f"held while it stays in the top {p['max_pos']} at the monthly rebalance (every {p['freq']} trading days); "
+        return ((f"stop loss {100 * p['stop_pct']:.0f}% below the entry; " if p.get("stop_pct") else "")
+                + f"no fixed target: held while it stays in the top {p['max_pos']} at the monthly rebalance (every {p['freq']} trading days); "
                 "everything is sold when Nifty closes a rebalance day below its EMA 200")
     if p["kind"] == "breakout":
         return (f"trailing stop {p['atr_k']}× ATR below the highest high" if p["exit"] == "trail"

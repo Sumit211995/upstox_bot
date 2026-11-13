@@ -53,8 +53,9 @@ def morning_calls(send, today, accounts):
             if key in done:
                 continue
             done.add(key)
-            lines.append(f"• BUY {_contract(c)} at the open (ref ₹{c.get('price')}) · stop ₹{c.get('stop')}"
-                         + (f" · target ₹{c['target']}" if c.get("target") else "") + f"\n  {c.get('strategy_label', '')} · {label}")
+            lines.append(f"• BUY {_contract(c)}\n  Entry: at the open (ref ₹{c.get('price')}) · SL ₹{c.get('stop')}"
+                         + (f" · Target ₹{c['target']}" if c.get("target") else f" · Target: none, exit after {c.get('hold')} days")
+                         + f"\n  Time: swing · up to {c.get('hold')} trading days\n  {c.get('strategy_label', '')} · {label}")
     seen.add("morning")
     _remember(today, seen)
     if not lines:

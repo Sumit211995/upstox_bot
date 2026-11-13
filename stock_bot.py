@@ -45,14 +45,28 @@ def _clean(o):
     return _iso(o)
 
 
+HORIZON = "Swing · about 1–3 months"
+
+
 def _orders(st):
-    return ([dict(side="SELL", sym=o["sym"], reason=o.get("reason", "")) for o in st["pending_sell"]]
-            + [dict(side="BUY", sym=o["sym"], ref=round(o["ref"], 2), why=o.get("why", "")) for o in st["pending_buy"]])
+    p = st["params"]
+    sl = f"−{100 * p['stop_pct']:.0f}%" if p.get("stop_pct") else None
+    return ([dict(side="SELL", sym=o["sym"], reason=o.get("reason", ""), when="next 09:15 open") for o in st["pending_sell"]]
+            + [dict(side="BUY", sym=o["sym"], ref=round(o["ref"], 2), why=o.get("why", ""), when="next 09:15 open",
+                    stop=round(o["stop"], 2) if o.get("stop") else None, stop_pct=sl, target=None,
+                    target_rule=f"none fixed: held while in the top {p['max_pos']} (reviewed every {p['freq']} trading days)",
+                    horizon=p.get("horizon") or HORIZON) for o in st["pending_buy"]])
 
 
 def calls_text(orders, when="tomorrow's open"):
-    lines = [f"• {o['side']} {o['sym']}" + (f" (ref ₹{o['ref']:,.2f})" if o.get("ref") else "")
-             + (f" · {o.get('why') or o.get('reason')}" if (o.get("why") or o.get("reason")) else "") for o in orders]
+    lines = []
+    for o in orders:
+        if o["side"] == "BUY":
+            lines.append(f"• BUY {o['sym']}\n  Entry: {when} (ref ₹{o['ref']:,.2f})"
+                         + (f"\n  SL: ₹{o['stop']:,.2f} ({o['stop_pct']} from entry)" if o.get("stop") else "")
+                         + f"\n  Target: {o['target_rule']}\n  Time: {o['horizon']}\n  Why: {o.get('why', '')}")
+        else:
+            lines.append(f"• SELL {o['sym']} at {when} · {o.get('reason', '')}")
     return f"📈 STOCK CALL · {when} (paper, ₹{CAPITAL:,.0f} momentum account)\n" + "\n".join(lines)
 
 
@@ -67,6 +81,8 @@ def run(notify=None, today=None):
             # started during the day (today's prices not in yet): begin AFTER the last finished day, so the first
             # decision is made on today's close and bought at the next open, never at an open that already passed
             st["asof"] = last
+    if not st["positions"] and not st["pending_buy"]:
+        st["params"] = dict(stocks.FINAL)                      # no open trades: pick up the current rule set
     st, events = stocks.paper_step(st, today=today, prep=prep)
     STATE.mkdir(exist_ok=True)
     ACCT.write_bytes(pickle.dumps(st))
@@ -94,7 +110,8 @@ def run(notify=None, today=None):
         last = r["close"] if r else p["last"]
         positions.append(dict(sym=p["sym"], shares=p["shares"], entry=round(p["entry"], 2), entry_day=p["entry_day"],
                               cost=round(p["cost"], 2), last=round(last, 2), value=round(last * p["shares"], 2),
-                              pnl=round(last * p["shares"] - p["cost"], 2), days=p["days"], why=p.get("why", "")))
+                              pnl=round(last * p["shares"] - p["cost"], 2), days=p["days"], why=p.get("why", ""),
+                              stop=round(p["stop"], 2) if p.get("stop") else None, target=None))
     eq = st["equity"][-1][1] if st["equity"] else st["capital"]
     try:
         research = json.loads(RESEARCH.read_text())
@@ -109,7 +126,8 @@ def run(notify=None, today=None):
                 equity=round(eq, 2), positions=positions, closed=st["closed"][::-1], equity_curve=st["equity"][-260:],
                 orders=orders, next_rebalance_in=(-st["n"]) % st["params"]["freq"], params=st["params"],
                 market=dict(nifty_up=bool(m.get("nifty_up")), vix_rank=m.get("vix_rank")), ranking=ranked, news=heads,
-                rule=stocks.exit_rule_text(st["params"]), research=research, events=events)
+                rule=stocks.exit_rule_text(st["params"]), research=research, events=events,
+                horizon=st["params"].get("horizon") or HORIZON)
     VIEW.write_text(json.dumps(_clean(view)))
     if notify:
         for e in events:

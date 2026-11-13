@@ -380,6 +380,12 @@ footer .sig b { color: var(--accent); font-weight: 700; }
 .sigstrip { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 12px; overflow-x: auto; margin-top: 16px; padding-bottom: 4px; scroll-snap-type: x proximity; }
 .scard { scroll-snap-align: start; padding: 12px 14px; cursor: pointer; border-left: 3px solid var(--border-2); min-width: 0; }
 .scard.buy { border-left-color: var(--up); } .scard.sell { border-left-color: var(--down); } .scard.hold { border-left-color: var(--warn); } .scard.wait { border-left-color: var(--border-2); }
+.lvl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 6px 0 4px; }
+.lvl > span { background: var(--surface-2); border-radius: 8px; padding: 5px 7px; min-width: 0; }
+.lvl i { display: block; font-style: normal; font-size: 10px; letter-spacing: .4px; text-transform: uppercase; color: var(--muted); }
+.lvl b { display: block; font-size: 12px; font-weight: 700; overflow-wrap: break-word; line-height: 1.35; }
+.scard .lvl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 560px) { .lvl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .scard .t1 { display: flex; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .3px; }
 .scard .t2 { font-weight: 700; font-size: 14px; margin: 5px 0 3px; line-height: 1.35; }
 .scard .t3 { font-size: 12px; color: var(--text-2); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -1003,10 +1009,10 @@ function renderBuying() {
   // tonight's signals (all strategies)
   const sg = d.signals || [];
   $("bSigHint").textContent = d.asof ? `from NSE data of ${d.asof} · 1 lot, plain option, priced at that close · SL / TG = stop / target on the option price` : "";
-  $("bSig").innerHTML = sg.length ? `<thead><tr><th>Strategy</th><th>Signal</th><th>Option</th><th>Expiry</th><th>Price (last close)</th><th>Stop (SL)</th><th>Target (TG)</th><th>Lot · cost</th><th>Hold</th><th>Time decay · Δ</th><th>Why</th></tr></thead><tbody>` +
+  $("bSig").innerHTML = sg.length ? `<thead><tr><th>Strategy</th><th>Signal</th><th>Option</th><th>Expiry</th><th>Entry (next 09:15 open, ≈ last close)</th><th>Stop (SL)</th><th>Target (TG)</th><th>Lot · cost</th><th>Time</th><th>Time decay · Δ</th><th>Why</th></tr></thead><tbody>` +
     sg.slice().sort((x, y) => benefitOf(y.strategy) - benefitOf(x.strategy) || x.cost - y.cost).map(x => `<tr><td>${esc(x.strategy_label)}</td><td><span class="sig ${x.kind === "CE" ? "ce" : "pe"}">BUY ${x.kind}</span></td><td><b>${esc(contract(x))}</b></td><td class="mono">${esc(x.expiry)}</td>
-      <td class="mono">₹${fmt(x.price)}</td><td class="mono neg-t">₹${fmt(x.stop)} <span class="sub">−${fmt(x.sl_pct * 100, 0)}%</span></td><td class="mono pos-t">${x.target ? "₹" + fmt(x.target) + ` <span class="sub">+${fmt(x.tp_pct * 100, 0)}%</span>` : "–"}</td>
-      <td class="mono">${x.lot} · ${inr(x.cost)}</td><td class="mono">≤ ${x.hold}d</td><td class="mono">${x.theta_day != null ? sinr(x.theta_day) + "/day · Δ " + fmt(x.delta) : "–"}</td><td class="sub" style="white-space:normal;min-width:220px">${esc(x.why)}</td></tr>`).join("") + `</tbody>`
+      <td class="mono">₹${fmt(x.price)}</td><td class="mono neg-t">₹${fmt(x.stop)} <span class="sub">−${fmt(x.sl_pct * 100, 0)}%</span></td><td class="mono pos-t">${x.target ? "₹" + fmt(x.target) + ` <span class="sub">+${fmt(x.tp_pct * 100, 0)}%</span>` : `<span class="sub">none · exit day ${x.hold}</span>`}</td>
+      <td class="mono">${x.lot} · ${inr(x.cost)}</td><td class="mono">Swing · ≤ ${x.hold} days</td><td class="mono">${x.theta_day != null ? sinr(x.theta_day) + "/day · Δ " + fmt(x.delta) : "–"}</td><td class="sub" style="white-space:normal;min-width:220px">${esc(x.why)}</td></tr>`).join("") + `</tbody>`
     : `<tbody><tr><td class="empty"><div class="big">🌙</div>No buy signal from any strategy tonight. Signals are rare by design (≈ 3–6 a month across all strategies).</td></tr></tbody>`;
   // strategies table
   const ss = rankedStrategies();
@@ -1089,33 +1095,61 @@ const benefit = x => Math.min((x.train || {}).pf || 0, (x.test || {}).pf || 0);
 const rankedStrategies = () => ((S.b && S.b.strategies) || []).slice().sort((p, q) => (q.combined - p.combined) || benefit(q) - benefit(p));
 const succ = x => x.test ? `<span class="succ ${x.test.pf > 1 ? "g" : "r"}">✓ ${fmt(x.test.win, 0)}% win · PF ${fmt(x.test.pf)} <small>2025–26</small></span>` : "";
 const greekTxt = x => x.theta_day !== undefined && x.theta_day !== null ? ` · <span title="time decay per day for 1 lot (theta) and how much the option moves per 1 point of the index / share (delta)">θ ${sinr(x.theta_day)}/day · Δ ${fmt(x.delta)}</span>` : "";
+// one block for every call: Entry · SL · Target · Time (holding period)
+function lvl(entry, sl, tg, time) {
+  return `<div class="lvl"><span><i>Entry</i><b>${entry}</b></span><span><i>SL</i><b class="neg-t">${sl}</b></span>` +
+    `<span><i>Target</i><b class="pos-t">${tg}</b></span><span><i>Time</i><b>${time}</b></span></div>`;
+}
+function scard(c, i) {
+  return `<div class="panel scard ${c.k}" style="--i:${i}" data-go="${c.go}" data-sym="${c.sym || ""}">
+      <div class="t1"><span class="tag ${c.info ? "info" : c.k === "wait" ? "info" : c.k}">${esc(c.tag)}</span>${c.best ? '<span class="tag best">★ BEST</span>' : ""}<span>${esc(c.src)}</span></div>
+      ${c.succ ? `<div class="sline">${c.succ}</div>` : ""}<div class="t2">${c.t2}</div><div class="t3">${c.t3}</div></div>`;
+}
+function stockCards() {
+  const v = S.st; if (!v || !v.ready) return [];
+  const live = v.live || {}, hz = "Swing · 1–3 months", out = [];
+  const tg = `none fixed · top-${v.params.max_pos} rule`, succS = v.research && v.research.rows ? `<span class="succ g">✓ ${fmt(v.research.rows[0].te_win, 0)}% win · PF ${fmt(v.research.rows[0].te_pf)} <small>2024–26</small></span>` : "";
+  for (const p of v.positions || []) { const now = p.live ?? p.last, pnl = p.live_pnl ?? p.pnl;
+    out.push({ side: "stock", k: "hold", tag: "HOLDING", src: "Stocks · momentum", succ: succS, go: "stPanel", t2: `<b>${esc(p.sym)}</b> · ${p.shares} shares`,
+      t3: lvl(`₹${fmt(p.entry)} · ${esc(p.entry_day)}`, p.stop ? "₹" + fmt(p.stop) : "–", tg, `day ${p.days} · ${hz}`) + `now ₹${fmt(now)} <b class="${cls(pnl)}">${sinr(pnl)}</b>` }); }
+  for (const o of v.orders || []) out.push(o.side === "BUY"
+    ? { side: "stock", k: "buy", tag: "BUY SHARE", src: "Stocks · momentum", succ: succS, go: "stPanel", t2: `<b>${esc(o.sym)}</b>${live[o.sym] ? " · now ₹" + fmt(live[o.sym].last) : ""}`,
+        t3: lvl(`next 09:15 open · ref ₹${fmt(o.ref)}`, o.stop ? `₹${fmt(o.stop)} (${esc(o.stop_pct)})` : "–", tg, hz) + `<span class="sub">${esc(o.why || "")}</span>` }
+    : { side: "stock", k: "sell", tag: "SELL SHARE", src: "Stocks · momentum", go: "stPanel", t2: `<b>${esc(o.sym)}</b>`,
+        t3: lvl("next 09:15 open", "–", "–", "exit") + `<span class="sub">${esc(o.reason || "")}</span>` });
+  return out;
+}
 function renderSignals() {
   const cards = [];
+  const holdOf = id => { const x = ((S.b && S.b.strategies) || []).find(y => y.id === id); return x ? x.params.hold : null; };
   for (const ac of (S.b ? S.b.accounts : [])) for (const op of ac.open)
     cards.push({ side: "buy", k: "hold", tag: "HOLDING", src: (op.strategy_label || "") + " · " + ac.label, t2: contract(op) + " · exp " + op.expiry,
-      t3: `in ₹${fmt(op.entry)} · <b class="neg-t">SL ₹${fmt(op.stop)}</b> · <b class="pos-t">${op.target ? "TG ₹" + fmt(op.target) : "no target"}</b>${op.live ? ` · <span class="lv">${op.live.source === "live" ? "LIVE" : "now est."}</span> ₹${fmt(op.live.price)} <b class="${cls(op.live.pnl)}">${sinr(op.live.pnl)}</b>` : ""}${greekTxt(op)}`, go: "buyPanel" });
+      t3: lvl(`₹${fmt(op.entry)} · ${esc(op.entry_day)}`, `₹${fmt(op.stop)}`, op.target ? `₹${fmt(op.target)}` : `none · time exit`, `Swing · ≤ ${holdOf(op.strategy) ?? "?"} days`) +
+        `${op.live ? `<span class="lv">${op.live.source === "live" ? "LIVE" : "now est."}</span> ₹${fmt(op.live.price)} <b class="${cls(op.live.pnl)}">${sinr(op.live.pnl)}</b>` : ""}${greekTxt(op)}`, go: "buyPanel" });
   const sg = (S.b && S.b.signals) || [];
   rankedStrategies().forEach((x, i) => {
     const mine = sg.filter(y => y.strategy === x.id).sort((p, q) => p.cost - q.cost), p = x.params, first = mine[0];
     const rule = `SL −${fmt(p.sl * 100, 0)}% · ${p.tp ? "TG +" + fmt(p.tp * 100, 0) + "% (1:" + fmt(p.tp / p.sl, 0) + ")" : "no target"} · ≤ ${p.hold}d`;
     cards.push(first ? { side: "buy", k: first.kind === "CE" ? "buy" : "sell", tag: "BUY " + first.kind, best: i === 0 && x.combined, src: x.label, succ: succ(x), go: "buyPanel", sym: first.sym,
         t2: `${esc(contract(first))} · exp ${esc(first.expiry)}`,
-        t3: `≈ ₹${fmt(first.price)} × ${first.lot} = ${inr(first.cost)} · next 09:15<br><b class="neg-t">SL ₹${fmt(first.stop)}</b> · <b class="pos-t">${first.target ? "TG ₹" + fmt(first.target) : "no target"}</b> · ≤ ${p.hold}d${greekTxt(first)}${mine.length > 1 ? `<br><span class="sub">+${mine.length - 1} more signal(s) in the Buying tab</span>` : ""}` }
+        t3: lvl(`next 09:15 open · ≈ ₹${fmt(first.price)}`, `₹${fmt(first.stop)} (−${fmt(p.sl * 100, 0)}%)`, first.target ? `₹${fmt(first.target)} (+${fmt(p.tp * 100, 0)}%)` : `none · exit day ${p.hold}`, `Swing · ≤ ${p.hold} days`) +
+          `${first.lot} × ≈ ₹${fmt(first.price)} = ${inr(first.cost)}${greekTxt(first)}${mine.length > 1 ? `<br><span class="sub">+${mine.length - 1} more signal(s) in the Buying tab</span>` : ""}` }
       : { side: "buy", k: "wait", tag: x.combined ? "WAIT" : "SHOWN ONLY", best: i === 0 && x.combined, src: x.label, succ: succ(x), go: "buyPanel",
-        t2: "No signal tonight", t3: `rules: <b class="neg-t">SL −${fmt(p.sl * 100, 0)}%</b> · <b class="pos-t">${p.tp ? "TG +" + fmt(p.tp * 100, 0) + "%" : "no target"}</b> · ≤ ${p.hold}d<br><span class="sub">${esc(rule.includes("1:") ? "1:2 risk-reward · " : "")}2022–24: ${fmt((x.train || {}).win, 0)}% win · PF ${fmt((x.train || {}).pf)}</span>` });
+        t2: "No signal tonight", t3: lvl("next 09:15 open", `−${fmt(p.sl * 100, 0)}% of entry`, p.tp ? `+${fmt(p.tp * 100, 0)}% of entry` : `none · exit day ${p.hold}`, `Swing · ≤ ${p.hold} days`) +
+          `<span class="sub">${esc(rule.includes("1:") ? "1:2 risk-reward · " : "")}2022–24: ${fmt((x.train || {}).win, 0)}% win · PF ${fmt((x.train || {}).pf)}</span>` });
   });
   const hs = {}; for (const h of ((S.h && S.h.books) || [])) hs[h.id] = h.stats;
   for (const b of (S.paper || [])) {
     const op = b.open[0], nx = !op ? nextEntry(b) : null, p = b.params, st = hs[b.id];
     const sc = st ? `<span class="succ ${st.pf > 1 ? "g" : "r"}">✓ ${fmt(st.win, 0)}% win · PF ${fmt(st.pf)} <small>since 2022</small></span>` : "";
     if (op) cards.push({ side: "sell", k: "hold", tag: "SOLD", src: b.label, succ: sc, t2: `${esc(op.side)} · exp ${esc(op.expiry)}`,
-      t3: `credit ${inr(op.credit)} · now <span class="${cls(op.pnl)}">${sinr(op.pnl)}</span><br><b class="neg-t">SL: each sold leg +${fmt(p.sl * 100, 0)}%</b> · <b class="pos-t">TG: time decay, exit 15:15</b>`, go: "journalPanel" });
+      t3: lvl(`10:00 · credit ${inr(op.credit)}`, (op.legs || []).filter(l => l.side === "SELL" && l.sl).map(l => `${fmt(l.strike, 0)}${l.kind} ₹${fmt(l.sl)}`).join(" · ") || `+${fmt(p.sl * 100, 0)}% per leg`, "time decay · exit 15:15", "Intraday · today") +
+        `now <span class="${cls(op.pnl)}">${sinr(op.pnl)}</span>`, go: "journalPanel" });
     else cards.push({ side: "sell", k: "sell", tag: "SELL", src: b.label, succ: sc, t2: nx ? "Hedged ATM straddle · " + nx : S.q ? "Done for today" : "…",
-      t3: `<b class="neg-t">SL: each sold leg +${fmt(p.sl * 100, 0)}%</b> · <b class="pos-t">TG: keep the decay, exit 15:15</b> · wings ±${p.wing} strikes`, go: "journalPanel" });
+      t3: lvl("10:00 · sell ATM CE + PE", `each sold leg +${fmt(p.sl * 100, 0)}%`, "time decay · exit 15:15", "Intraday") + `<span class="sub">wings ±${p.wing} strikes (hedge)</span>`, go: "journalPanel" });
   }
-  const card = (c, i) => `<div class="panel scard ${c.k}" style="--i:${i}" data-go="${c.go}" data-sym="${c.sym || ""}">
-      <div class="t1"><span class="tag ${c.info ? "info" : c.k === "wait" ? "info" : c.k}">${esc(c.tag)}</span>${c.best ? '<span class="tag best">★ BEST</span>' : ""}<span>${esc(c.src)}</span></div>
-      ${c.succ ? `<div class="sline">${c.succ}</div>` : ""}<div class="t2">${c.t2}</div><div class="t3">${c.t3}</div></div>`;
+  const card = scard;
+  cards.push(...stockCards());
   $("sigStrip").innerHTML = cards.map(card).join("");
   $("bStrip").innerHTML = cards.filter(c => c.side === "buy").map(card).join("");         // same cards in the Buying tab
   $("sStrip").innerHTML = cards.filter(c => c.side === "sell").map(card).join("");        // … and in the Selling tab
@@ -1123,10 +1157,11 @@ function renderSignals() {
   const rank = {}; rankedStrategies().forEach((x, i) => rank[x.id] = i);
   const c2 = sg.slice().sort((x, y) => (rank[x.strategy] ?? 9) - (rank[y.strategy] ?? 9) || x.cost - y.cost).map(x => ({ k: x.kind === "CE" ? "buy" : "sell", tag: "BUY " + x.kind, src: x.strategy_label, sym: x.sym, go: "buyPanel",
     succ: sById[x.strategy] ? succ(sById[x.strategy]) : "", t2: `${esc(contract(x))} · exp ${esc(x.expiry)}`,
-    t3: `₹${fmt(x.price)} × ${x.lot} = ${inr(x.cost)}<br><b class="neg-t">SL ₹${fmt(x.stop)}</b> · <b class="pos-t">${x.target ? "TG ₹" + fmt(x.target) : "no target"}</b> · ≤ ${x.hold}d${greekTxt(x)}` }));
+    t3: lvl(`next 09:15 open · ≈ ₹${fmt(x.price)}`, `₹${fmt(x.stop)} (−${fmt(x.sl_pct * 100, 0)}%)`, x.target ? `₹${fmt(x.target)} (+${fmt(x.tp_pct * 100, 0)}%)` : `none · exit day ${x.hold}`, `Swing · ≤ ${x.hold} days`) +
+      `${x.lot} × ₹${fmt(x.price)} = ${inr(x.cost)}${greekTxt(x)}` }));
   $("sigStrip2").innerHTML = c2.length ? c2.map(card).join("") : `<div class="panel scard wait"><div class="t2">No stock / index signal tonight</div><div class="t3">Every tested buying strategy is checked after the evening NSE data (≈ 19:00 IST).</div></div>`;
   if (S.b && S.b.asof) $("sigHint").textContent = `tested strategies only · NSE data of ${S.b.asof} · option priced at that close · SL / TG on the option price`;
-  document.querySelectorAll("#sigStrip .scard, #sigStrip2 .scard, #bStrip .scard, #sStrip .scard").forEach(el => el.onclick = () => {
+  document.querySelectorAll("#sigStrip .scard, #sigStrip2 .scard, #bStrip .scard, #sStrip .scard, #stOrders .scard").forEach(el => el.onclick = () => {
     const tgt = $(el.dataset.go), sec = tgt.closest(".tabsec"); if (sec) setTab(sec.dataset.tab);
     if (el.dataset.sym) { S.nsym = el.dataset.sym; renderScan(); }
     setTimeout(() => tgt.scrollIntoView({ behavior: "smooth", block: "start" }), 30); });
@@ -1182,16 +1217,14 @@ function renderStocks() {
     <div class="kpi"><div class="k">Market filter</div><div class="v ${m.nifty_up ? "pos-t" : "neg-t"}">${m.nifty_up ? "Buying allowed" : "Stay in cash"}</div><div class="s">Nifty ${m.nifty_up ? "above" : "below"} its 200-day EMA</div></div>
     <div class="kpi"><div class="k">Next decision</div><div class="v mono">${v.next_rebalance_in ? v.next_rebalance_in + " day(s)" : "tonight"}</div><div class="s">${v.next_rebalance_in ? "" : "after the close · "}every ${v.params.freq} trading days</div></div>
     <div class="kpi"><div class="k">Tested 2024–26 (unseen)</div><div class="v mono">${r0.te_cagr != null ? fmt(r0.te_cagr, 1) + "%/yr" : "–"}</div><div class="s">${r0.te_pf != null ? "PF " + fmt(r0.te_pf) + " · worst drop " + fmt(r0.te_maxdd, 0) + "%" : ""}</div></div>`;
-  $("stOrders").innerHTML = (v.orders || []).length ? `<div class="sigstrip">` + v.orders.map((o, i) => `<div class="panel scard ${o.side === "BUY" ? "buy" : "sell"}" style="--i:${i}">
-      <div class="t1"><span class="st ${o.side === "BUY" ? "won" : "lost"}">${o.side}</span> next open</div>
-      <div class="t2"><b>${esc(o.sym)}</b> <span class="mono">${o.ref ? "ref ₹" + fmt(o.ref) : ""}${lp(o.sym) ? " · now ₹" + fmt(lp(o.sym)) : ""}</span></div>
-      <div class="t3">${esc(o.why || o.reason || "")}</div></div>`).join("") + `</div>`
+  const sc = stockCards().filter(c => c.k !== "hold");
+  $("stOrders").innerHTML = sc.length ? `<div class="sigstrip">` + sc.map(scard).join("") + `</div>`
     : `<div class="panel scard wait"><div class="t2">No stock call for the next open</div><div class="t3">${v.next_rebalance_in ? `The account trades only on decision days (every ${v.params.freq} trading days, next in ${v.next_rebalance_in}).` : "Next decision tonight after the close: the calls appear here and on Telegram, to buy at the next 09:15 open."}</div></div>`;
   $("stHoldHint").textContent = pos.some(p => p.live) ? "live prices from Upstox" : "prices at the last close";
-  $("stPos").innerHTML = `<thead><tr><th>Share</th><th>Shares</th><th>Bought</th><th>Entry</th><th>Now</th><th>Value</th><th>P&amp;L</th><th>Days</th></tr></thead><tbody>` +
+  $("stPos").innerHTML = `<thead><tr><th>Share</th><th>Shares</th><th>Bought</th><th>Entry</th><th>SL</th><th>Target</th><th>Now</th><th>Value</th><th>P&amp;L</th><th>Time</th></tr></thead><tbody>` +
     (pos.map(p => { const now = p.live ?? p.last, pnl = p.live_pnl ?? p.pnl;
-      return `<tr data-sym="${esc(p.sym)}" class="click"><td><b>${esc(p.sym)}</b></td><td class="mono">${p.shares}</td><td class="mono">${esc(p.entry_day)}</td><td class="mono">₹${fmt(p.entry)}</td><td class="mono">₹${fmt(now)}</td><td class="mono">${inr(now * p.shares)}</td><td class="mono ${cls(pnl)}">${inr(pnl)} (${pctTxt(100 * pnl / p.cost)})</td><td class="mono">${p.days}</td></tr>`; }).join("")
-     || `<tr><td colspan="8" class="sub">No holdings yet${(v.orders || []).length ? ": the calls above are bought at the next open" : ""}.</td></tr>`) + `</tbody>`;
+      return `<tr data-sym="${esc(p.sym)}" class="click"><td><b>${esc(p.sym)}</b></td><td class="mono">${p.shares}</td><td class="mono">${esc(p.entry_day)}</td><td class="mono">₹${fmt(p.entry)}</td><td class="mono neg-t">${p.stop ? "₹" + fmt(p.stop) : "–"}</td><td class="sub">top-${v.params.max_pos} rule</td><td class="mono">₹${fmt(now)}</td><td class="mono">${inr(now * p.shares)}</td><td class="mono ${cls(pnl)}">${inr(pnl)} (${pctTxt(100 * pnl / p.cost)})</td><td class="mono">day ${p.days} · 1–3 mo</td></tr>`; }).join("")
+     || `<tr><td colspan="10" class="sub">No holdings yet${(v.orders || []).length ? ": the calls above are bought at the next open" : ""}.</td></tr>`) + `</tbody>`;
   $("stRank").innerHTML = `<thead><tr><th>#</th><th>Share</th><th>Close</th><th>Live</th><th>12-month momentum</th><th>Status</th></tr></thead><tbody>` +
     (v.ranking || []).map(x => `<tr data-sym="${esc(x.sym)}" class="click${S.stSym === x.sym ? " on" : ""}"><td class="mono">${x.rank}</td><td><b>${esc(x.sym)}</b></td><td class="mono">₹${fmt(x.ref)}</td><td class="mono">${lp(x.sym) ? "₹" + fmt(lp(x.sym)) : "–"}</td><td class="mono pos-t">${pctTxt(x.mom)}</td><td>${x.held ? '<span class="st won">held</span>' : x.pick ? '<span class="st open">top 3 · buy</span>' : '<span class="sub">watch</span>'}</td></tr>`).join("") + `</tbody>`;
   document.querySelectorAll("#stRank tr[data-sym], #stPos tr[data-sym]").forEach(r => r.onclick = () => selectStock(r.dataset.sym));
@@ -1238,7 +1271,7 @@ async function selectStock(sym) {
   if (cachedNews && cachedNews.length) draw(cachedNews);
   else { try { const n = await getJSON("/api/news?sym=" + encodeURIComponent(sym)); if (S.stSym === sym) draw(n.items || []); } catch (e) { draw([]); } }
 }
-async function pullStocks() { try { S.st = await getJSON("/api/stocks"); if (S.tab === "stocks") renderStocks(); } catch (e) {} setTimeout(pullStocks, S.ov && S.ov.market.open ? 15000 : 120000); }
+async function pullStocks() { try { S.st = await getJSON("/api/stocks"); if (S.tab === "stocks") renderStocks(); renderSignals(); } catch (e) {} setTimeout(pullStocks, S.ov && S.ov.market.open ? 15000 : 120000); }
 
 /* ---------- tabs ---------- */
 function setTab(t) {
