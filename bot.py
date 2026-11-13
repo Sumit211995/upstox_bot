@@ -20,8 +20,11 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 
+import alerts
 import engine
+import live
 import market
+import recorder
 import swing_bot
 from config import HERE, load_config
 from notifier import send
@@ -153,6 +156,27 @@ def poll(cfg):
     return out
 
 
+def live_extras(cfg, now):
+    """Market hours, after the selling books: option-chain recording, the 09:15 buy calls and the live stop / target
+    watch on open buy positions. Each part is isolated: a failure here never stops the selling books."""
+    say = lambda text: send(cfg, text)
+    try:
+        recorder.maybe_snapshot()
+    except Exception:
+        log.exception("chain recorder failed")
+    accounts = [(ac["label"], _read(STATE / f"buy_{ac['id']}.json", {})) for ac in swing_bot.load_books()[1]]
+    try:
+        if now.hour * 100 + now.minute >= 915:
+            alerts.morning_calls(say, now.date(), accounts)
+    except Exception:
+        log.exception("morning calls failed")
+    try:
+        if alerts.every("watch-options", 60):
+            alerts.watch(say, now.date(), alerts.option_positions(accounts, live.mark))
+    except Exception:
+        log.exception("live position watch failed")
+
+
 def day_summary(cfg, today):
     lines = []
     for book in cfg.books:
@@ -233,6 +257,7 @@ def main():
             now = now_ist()
             if market_open(now):
                 poll(cfg)
+                live_extras(cfg, now)
                 errors = 0
             elif now.weekday() < 5 and now.hour * 100 + now.minute > 1535 and summary_sent != now.date():
                 day_summary(cfg, now.date())
