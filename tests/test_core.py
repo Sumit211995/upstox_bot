@@ -150,3 +150,22 @@ def test_save_pickle_is_atomic(tmp_path):
     market.save_pickle(pd.DataFrame(dict(a=[1, 2])), p)
     market.save_pickle(pd.DataFrame(dict(a=[3])), p)
     assert list(pd.read_pickle(p)["a"]) == [3] and [f.name for f in tmp_path.iterdir()] == ["x.pkl"]
+
+
+def test_save_pickle_parallel_writers(tmp_path):
+    import threading
+    import pandas as pd
+    import market
+    p = tmp_path / "x.pkl"
+    errs = []
+
+    def w(i):
+        try:
+            for _ in range(20):
+                market.save_pickle(pd.DataFrame(dict(a=[i])), p)
+        except Exception as e:                                       # same-name temp files collided before
+            errs.append(e)
+    ts = [threading.Thread(target=w, args=(i,)) for i in range(4)]
+    [t.start() for t in ts]
+    [t.join() for t in ts]
+    assert not errs and len(pd.read_pickle(p)) == 1

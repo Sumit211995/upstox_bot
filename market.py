@@ -10,6 +10,7 @@ import io
 import json
 import os
 import threading
+import uuid
 import time
 import zipfile
 from datetime import date, datetime, timedelta, timezone
@@ -63,7 +64,7 @@ def save_pickle(df, path):
     see a half-written file (that raised "EOFError: Ran out of input" once)."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    tmp = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")          # unique: both containers run as pid 1
     df.to_pickle(tmp)
     os.replace(tmp, path)
 
