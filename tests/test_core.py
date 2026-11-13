@@ -141,3 +141,12 @@ def test_epoch_seconds_any_pandas_unit():
         assert int(market.epoch_s(s).iloc[0]) == want
     f = market._frame([["2026-11-12T09:15:00+05:30", 1, 2, 0.5, 1.5]])
     assert int(f["time"].iloc[0]) == want
+
+
+def test_save_pickle_is_atomic(tmp_path):
+    import pandas as pd
+    import market
+    p = tmp_path / "x.pkl"
+    market.save_pickle(pd.DataFrame(dict(a=[1, 2])), p)
+    market.save_pickle(pd.DataFrame(dict(a=[3])), p)
+    assert list(pd.read_pickle(p)["a"]) == [3] and [f.name for f in tmp_path.iterdir()] == ["x.pkl"]

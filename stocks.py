@@ -113,7 +113,7 @@ def candles(sym, refresh=True, key=None):
             df = new if df is None else pd.concat([df, new])
             df = df.drop_duplicates("day", keep="last").sort_values("day").reset_index(drop=True)
             path.parent.mkdir(parents=True, exist_ok=True)
-            df.to_pickle(path)
+            market.save_pickle(df, path)
     return df
 
 

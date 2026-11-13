@@ -8,6 +8,7 @@
 import gzip
 import io
 import json
+import os
 import threading
 import time
 import zipfile
@@ -55,6 +56,16 @@ def _get(url, tries=4):
 
 
 _EPOCH = pd.Timestamp("1970-01-01", tz="UTC")
+
+
+def save_pickle(df, path):
+    """Write a cache file atomically: the bot and the dashboard (two containers) share data/, so a reader must never
+    see a half-written file (that raised "EOFError: Ran out of input" once)."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    df.to_pickle(tmp)
+    os.replace(tmp, path)
 
 
 def epoch_s(ts):
@@ -106,7 +117,7 @@ def history(key, n=5, progress=None):
             df = new if df is None else pd.concat([df, new])
             df = df.drop_duplicates("time", keep="last").sort_values("time").reset_index(drop=True)
             path.parent.mkdir(parents=True, exist_ok=True)
-            df.to_pickle(path)
+            save_pickle(df, path)
         if progress:
             progress(len(df))
         return df
@@ -141,7 +152,7 @@ def vix_daily():
             df = new if df is None else pd.concat([df, new])
             df = df.drop_duplicates("day", keep="last").sort_values("day").reset_index(drop=True)
             path.parent.mkdir(parents=True, exist_ok=True)
-            df.to_pickle(path)
+            save_pickle(df, path)
         return df
 
 
@@ -210,5 +221,5 @@ def bhavcopy(day: date):
     df["expiry"] = pd.to_datetime(df["expiry"], format="mixed").dt.date
     df["day"] = day
     path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_pickle(path)
+    save_pickle(df, path)
     return df

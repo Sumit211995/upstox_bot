@@ -88,7 +88,7 @@ def bhav(day: date, refresh=False):
         return None
     df = _parse(r.content, day)
     FO_DIR.mkdir(parents=True, exist_ok=True)
-    df.to_pickle(path)
+    market.save_pickle(df, path)
     return df
 
 
