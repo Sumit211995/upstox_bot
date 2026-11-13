@@ -130,3 +130,14 @@ def test_books_file_valid():
         assert b["index"] in market.INDICES and b["family"] in ("straddle", "orb", "supertrend", "pullback")
         if b["family"] == "straddle":
             assert b["params"]["wing"] > 0, "paper books must be hedged (wings) to keep risk and margin bounded"
+
+
+def test_epoch_seconds_any_pandas_unit():
+    import pandas as pd
+    import market
+    want = 1794455100                                             # 2026-11-12 09:15 IST
+    for unit in ("ns", "us", "s"):                                # pandas 3 stores µs / s, pandas 2 ns
+        s = pd.Series(pd.to_datetime(["2026-11-12T09:15:00+05:30"])).astype(f"datetime64[{unit}, UTC]")
+        assert int(market.epoch_s(s).iloc[0]) == want
+    f = market._frame([["2026-11-12T09:15:00+05:30", 1, 2, 0.5, 1.5]])
+    assert int(f["time"].iloc[0]) == want

@@ -54,11 +54,21 @@ def _get(url, tries=4):
             time.sleep(2 * (i + 1))
 
 
+_EPOCH = pd.Timestamp("1970-01-01", tz="UTC")
+
+
+def epoch_s(ts):
+    """Datetimes → epoch seconds (int64). Works whatever the internal unit is: pandas 2 stores ns, pandas 3 can store
+    µs or s, so `.astype("int64") // 10**9` is wrong there (it gave 1970 dates on the server)."""
+    t = pd.to_datetime(ts, utc=True)
+    return ((t - _EPOCH) // pd.Timedelta(seconds=1)).astype("int64")
+
+
 def _frame(candles):
     if not candles:
         return pd.DataFrame(columns=["time", "open", "high", "low", "close"])
     df = pd.DataFrame([c[:5] for c in candles], columns=["ts", "open", "high", "low", "close"])
-    df["time"] = pd.to_datetime(df["ts"]).astype("int64") // 10**9      # epoch seconds (candle start)
+    df["time"] = epoch_s(df["ts"])                                     # epoch seconds (candle start)
     return df[["time", "open", "high", "low", "close"]].astype({"open": float, "high": float, "low": float, "close": float})
 
 

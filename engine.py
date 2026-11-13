@@ -45,10 +45,10 @@ def bars(df5, minutes):
     out["end"] = out["time"] + per
     if minutes == "D":                                    # a daily bar is complete at 15:30 IST
         d = pd.to_datetime(out["time"], unit="s", utc=True).dt.tz_convert("Asia/Kolkata").dt.normalize()
-        out["end"] = (d + pd.Timedelta(hours=15, minutes=30)).astype("int64") // 10**9
+        out["end"] = market.epoch_s(d + pd.Timedelta(hours=15, minutes=30))
     else:                                                 # the last bar of the day closes at 15:30 at the latest
         d = pd.to_datetime(out["time"], unit="s", utc=True).dt.tz_convert("Asia/Kolkata").dt.normalize()
-        close = (d + pd.Timedelta(hours=15, minutes=30)).astype("int64") // 10**9
+        close = market.epoch_s(d + pd.Timedelta(hours=15, minutes=30))
         out["end"] = np.minimum(out["end"], close)
     return out
 
