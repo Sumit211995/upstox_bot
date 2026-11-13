@@ -1,0 +1,5 @@
+test,tr_n,tr_win,tr_pf,tr_net,te_n,te_win,te_pf,te_net
+all signals (baseline),128,57.0,3.06,488093.0,181,45.9,1.75,352891.0
+"skip when delivery trend disagrees (CE needs 20d/60d ≥ 1, PE ≤ 1)",50,50.0,2.37,152109.0,111,43.2,1.65,198878.0
+"skip when accumulation disagrees (CE needs ≥ 40%, PE ≤ 60%)",82,41.5,1.43,89055.0,126,46.8,1.8,249748.0
+CE only: skip when delivery % rank < 30%,119,54.6,2.45,334681.0,166,48.2,1.94,378241.0

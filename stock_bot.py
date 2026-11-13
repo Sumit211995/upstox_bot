@@ -12,6 +12,8 @@ import logging
 import pickle
 from datetime import date, datetime
 
+import bigmoney_stocks
+import events
 import news
 import stocks
 from config import HERE
@@ -70,6 +72,56 @@ def calls_text(orders, when="tomorrow's open"):
     return f"📈 STOCK CALL · {when} (paper, ₹{CAPITAL:,.0f} momentum account)\n" + "\n".join(lines)
 
 
+def _deals():
+    """Today's bulk / block deals in our shares (collected each evening: NSE keeps only the current day's file).
+    Information only: there is no free history yet to test them."""
+    import pandas as pd
+    try:
+        bigmoney_stocks.collect_deals()
+    except Exception:
+        pass
+    files = sorted(bigmoney_stocks.DEALS_DIR.glob("*.pkl"))
+    if not files:
+        return dict(day=None, rows=[])
+    last = files[-1].stem.split("_")[-1]
+    rows = []
+    for f in [f for f in files if f.stem.endswith(last)]:
+        try:
+            df = pd.read_pickle(f)
+        except Exception:
+            continue
+        col = lambda *names: next((c for c in df.columns if any(n.lower() in c.lower() for n in names)), None)
+        cs, cc, cb, cq, cp = col("symbol"), col("client"), col("buy/sell", "buy / sell"), col("quantity"), col("price")
+        for r in df.to_dict("records"):
+            if cs and str(r.get(cs, "")).strip() in stocks.UNIVERSE:
+                rows.append(dict(kind=f.stem.split("_")[0], sym=str(r[cs]).strip(), client=str(r.get(cc, "")).strip(),
+                                 side=str(r.get(cb, "")).strip().upper(), qty=r.get(cq), price=r.get(cp)))
+    return dict(day=f"{last[:4]}-{last[4:6]}-{last[6:]}", rows=rows)
+
+
+def _news_days(names):
+    """Shares with a big-news move in the last session (gap ≥ 3% or close move ≥ 4% on ≥ 3× volume) + headlines.
+    Information only: trading these days lost money after costs (research/event_research.py)."""
+    try:
+        prep = events.prepare(stocks.load_all(refresh=False), stocks.nifty_daily(refresh=False))
+        evs = events.detect(prep)
+    except Exception:
+        return []
+    out, seen = [], set()
+    for e in sorted(evs, key=lambda e: -abs(e.get("move") or 0)):
+        if e["sym"] in seen:
+            continue
+        seen.add(e["sym"])
+        try:
+            heads = news.headlines(e["sym"], limit=3, name=names.get(e["sym"]))
+        except Exception:
+            heads = []
+        out.append(dict(e, news=heads))
+        if len(out) >= 8:
+            break
+    return out
+
+
 def run(notify=None, today=None):
     """Evening job. Returns the view dict written to state/stocks.json."""
     prep = stocks.build(refresh=True)
@@ -91,8 +143,13 @@ def run(notify=None, today=None):
     ranked = stocks.momentum_rank(prep, day, st["params"])[:TOP]
     rows = prep["rows"]
     held = {p["sym"] for p in st["positions"]}
+    try:
+        deliv = bigmoney_stocks.features(refresh=True)       # delivery % per share (information only, see research)
+    except Exception:
+        deliv = {}
     for i, x in enumerate(ranked):
         x["rank"], x["held"], x["pick"] = i + 1, x["sym"] in held, i < st["params"]["max_pos"]
+        x["deliv"] = deliv.get(x["sym"])
     heads = {}
     try:
         names = stocks.names()
@@ -111,7 +168,8 @@ def run(notify=None, today=None):
         positions.append(dict(sym=p["sym"], shares=p["shares"], entry=round(p["entry"], 2), entry_day=p["entry_day"],
                               cost=round(p["cost"], 2), last=round(last, 2), value=round(last * p["shares"], 2),
                               pnl=round(last * p["shares"] - p["cost"], 2), days=p["days"], why=p.get("why", ""),
-                              stop=round(p["stop"], 2) if p.get("stop") else None, target=None))
+                              stop=round(p["stop"], 2) if p.get("stop") else None, target=None,
+                              deliv=deliv.get(p["sym"])))
     eq = st["equity"][-1][1] if st["equity"] else st["capital"]
     try:
         research = json.loads(RESEARCH.read_text())
@@ -127,7 +185,7 @@ def run(notify=None, today=None):
                 orders=orders, next_rebalance_in=(-st["n"]) % st["params"]["freq"], params=st["params"],
                 market=dict(nifty_up=bool(m.get("nifty_up")), vix_rank=m.get("vix_rank")), ranking=ranked, news=heads,
                 rule=stocks.exit_rule_text(st["params"]), research=research, events=events,
-                horizon=st["params"].get("horizon") or HORIZON)
+                horizon=st["params"].get("horizon") or HORIZON, deals=_deals(), news_days=_news_days(names))
     VIEW.write_text(json.dumps(_clean(view)))
     if notify:
         for e in events:

@@ -1,0 +1,361 @@
+{
+ "coverage": {
+  "first": "2019-10-01",
+  "last": "2026-11-12",
+  "days": 1766,
+  "symbols": 50,
+  "missing": []
+ },
+ "A": [
+  {
+   "group": "A",
+   "test": "baseline momentum (FINAL)",
+   "tr_n": 52,
+   "tr_win": 50.0,
+   "tr_pf": 1.93,
+   "tr_cagr": 24.4,
+   "tr_maxdd": -27.9,
+   "tr_end": 47738,
+   "tr_avg_days": 42.1,
+   "te_n": 26,
+   "te_win": 50.0,
+   "te_pf": 4.55,
+   "te_cagr": 23.0,
+   "te_maxdd": -17.6,
+   "te_end": 36190,
+   "te_avg_days": 51.7
+  },
+  {
+   "group": "A",
+   "test": "keep 20d delivery % rank \u2265 50%",
+   "tr_n": 64,
+   "tr_win": 56.2,
+   "tr_pf": 1.8,
+   "tr_cagr": 18.9,
+   "tr_maxdd": -20.1,
+   "tr_end": 39965,
+   "tr_avg_days": 34.4,
+   "te_n": 35,
+   "te_win": 62.9,
+   "te_pf": 2.2,
+   "te_cagr": 14.8,
+   "te_maxdd": -18.6,
+   "te_end": 29668,
+   "te_avg_days": 37.5
+  },
+  {
+   "group": "A",
+   "test": "keep 20d delivery % rank \u2265 30%",
+   "tr_n": 66,
+   "tr_win": 51.5,
+   "tr_pf": 1.37,
+   "tr_cagr": 13.2,
+   "tr_maxdd": -25.9,
+   "tr_end": 32791,
+   "tr_avg_days": 33.3,
+   "te_n": 30,
+   "te_win": 46.7,
+   "te_pf": 3.31,
+   "te_cagr": 19.1,
+   "te_maxdd": -10.0,
+   "te_end": 33027,
+   "te_avg_days": 44.1
+  },
+  {
+   "group": "A",
+   "test": "keep delivery qty trend (20d/60d) \u2265 1",
+   "tr_n": 87,
+   "tr_win": 39.1,
+   "tr_pf": 0.79,
+   "tr_cagr": -4.8,
+   "tr_maxdd": -52.0,
+   "tr_end": 16454,
+   "tr_avg_days": 25.8,
+   "te_n": 50,
+   "te_win": 46.0,
+   "te_pf": 1.81,
+   "te_cagr": 9.9,
+   "te_maxdd": -16.3,
+   "te_end": 26221,
+   "te_avg_days": 25.6
+  },
+  {
+   "group": "A",
+   "test": "keep accumulation days (20d) \u2265 40%",
+   "tr_n": 81,
+   "tr_win": 48.1,
+   "tr_pf": 1.14,
+   "tr_cagr": 4.6,
+   "tr_maxdd": -38.6,
+   "tr_end": 23952,
+   "tr_avg_days": 23.7,
+   "te_n": 47,
+   "te_win": 46.8,
+   "te_pf": 1.32,
+   "te_cagr": 5.2,
+   "te_maxdd": -17.1,
+   "te_end": 23138,
+   "te_avg_days": 24.1
+  },
+  {
+   "group": "A",
+   "test": "top-6 momentum re-ranked by delivery rank",
+   "tr_n": 72,
+   "tr_win": 58.3,
+   "tr_pf": 1.48,
+   "tr_cagr": 14.0,
+   "tr_maxdd": -26.9,
+   "tr_end": 33741,
+   "tr_avg_days": 30.2,
+   "te_n": 33,
+   "te_win": 54.5,
+   "te_pf": 2.17,
+   "te_cagr": 17.7,
+   "te_maxdd": -13.9,
+   "te_end": 31861,
+   "te_avg_days": 40.7
+  },
+  {
+   "group": "A",
+   "test": "rank by momentum \u00d7 (0.5 + delivery rank)",
+   "tr_n": 57,
+   "tr_win": 54.4,
+   "tr_pf": 1.66,
+   "tr_cagr": 20.5,
+   "tr_maxdd": -31.1,
+   "tr_end": 42102,
+   "tr_avg_days": 37.7,
+   "te_n": 30,
+   "te_win": 50.0,
+   "te_pf": 3.07,
+   "te_cagr": 18.4,
+   "te_maxdd": -11.8,
+   "te_end": 32444,
+   "te_avg_days": 44.1
+  }
+ ],
+ "B": [
+  {
+   "group": "B",
+   "test": "delivery \u2265 2\u00d7 \u00b7 rr 1.5\u00d7ATR \u00b7 \u226415d",
+   "tr_n": 230,
+   "tr_win": 33.5,
+   "tr_pf": 0.59,
+   "tr_cagr": -29.1,
+   "tr_maxdd": -78.4,
+   "tr_end": 5061,
+   "tr_avg_days": 8.4,
+   "te_n": 136,
+   "te_win": 41.2,
+   "te_pf": 0.73,
+   "te_cagr": -11.2,
+   "te_maxdd": -38.9,
+   "te_end": 14240,
+   "te_avg_days": 8.7
+  },
+  {
+   "group": "B",
+   "test": "delivery \u2265 2\u00d7 \u00b7 rr 2.0\u00d7ATR \u00b7 \u226420d",
+   "tr_n": 175,
+   "tr_win": 39.4,
+   "tr_pf": 0.93,
+   "tr_cagr": -3.9,
+   "tr_maxdd": -48.6,
+   "tr_end": 17063,
+   "tr_avg_days": 12.1,
+   "te_n": 108,
+   "te_win": 38.9,
+   "te_pf": 0.73,
+   "te_cagr": -10.5,
+   "te_maxdd": -40.9,
+   "te_end": 14564,
+   "te_avg_days": 11.9
+  },
+  {
+   "group": "B",
+   "test": "delivery \u2265 2\u00d7 \u00b7 trail 2.0\u00d7ATR \u00b7 \u226430d",
+   "tr_n": 204,
+   "tr_win": 34.8,
+   "tr_pf": 0.93,
+   "tr_cagr": -2.7,
+   "tr_maxdd": -36.4,
+   "tr_end": 17920,
+   "tr_avg_days": 9.7,
+   "te_n": 122,
+   "te_win": 27.9,
+   "te_pf": 0.43,
+   "te_cagr": -21.4,
+   "te_maxdd": -52.9,
+   "te_end": 10046,
+   "te_avg_days": 9.1
+  },
+  {
+   "group": "B",
+   "test": "delivery \u2265 3\u00d7 \u00b7 rr 1.5\u00d7ATR \u00b7 \u226415d",
+   "tr_n": 168,
+   "tr_win": 34.5,
+   "tr_pf": 0.67,
+   "tr_cagr": -16.5,
+   "tr_maxdd": -58.5,
+   "tr_end": 9726,
+   "tr_avg_days": 7.5,
+   "te_n": 88,
+   "te_win": 36.4,
+   "te_pf": 0.53,
+   "te_cagr": -11.8,
+   "te_maxdd": -31.9,
+   "te_end": 13961,
+   "te_avg_days": 8.1
+  },
+  {
+   "group": "B",
+   "test": "delivery \u2265 3\u00d7 \u00b7 rr 2.0\u00d7ATR \u00b7 \u226420d",
+   "tr_n": 125,
+   "tr_win": 40.8,
+   "tr_pf": 0.95,
+   "tr_cagr": -2.6,
+   "tr_maxdd": -44.4,
+   "tr_end": 18029,
+   "tr_avg_days": 13.1,
+   "te_n": 73,
+   "te_win": 28.8,
+   "te_pf": 0.47,
+   "te_cagr": -14.0,
+   "te_maxdd": -36.6,
+   "te_end": 12994,
+   "te_avg_days": 11.8
+  },
+  {
+   "group": "B",
+   "test": "delivery \u2265 3\u00d7 \u00b7 trail 2.0\u00d7ATR \u00b7 \u226430d",
+   "tr_n": 142,
+   "tr_win": 33.8,
+   "tr_pf": 0.93,
+   "tr_cagr": -2.4,
+   "tr_maxdd": -35.3,
+   "tr_end": 18181,
+   "tr_avg_days": 9.0,
+   "te_n": 78,
+   "te_win": 28.2,
+   "te_pf": 0.42,
+   "te_cagr": -12.3,
+   "te_maxdd": -32.7,
+   "te_end": 13727,
+   "te_avg_days": 10.0
+  }
+ ],
+ "C": [
+  {
+   "test": "all signals (baseline)",
+   "tr_n": 128,
+   "tr_win": 57.0,
+   "tr_pf": 3.06,
+   "tr_net": 488093.0,
+   "te_n": 181,
+   "te_win": 45.9,
+   "te_pf": 1.75,
+   "te_net": 352891.0
+  },
+  {
+   "test": "skip when delivery trend disagrees (CE needs 20d/60d \u2265 1, PE \u2264 1)",
+   "tr_n": 50,
+   "tr_win": 50.0,
+   "tr_pf": 2.37,
+   "tr_net": 152109.0,
+   "te_n": 111,
+   "te_win": 43.2,
+   "te_pf": 1.65,
+   "te_net": 198878.0
+  },
+  {
+   "test": "skip when accumulation disagrees (CE needs \u2265 40%, PE \u2264 60%)",
+   "tr_n": 82,
+   "tr_win": 41.5,
+   "tr_pf": 1.43,
+   "tr_net": 89055.0,
+   "te_n": 126,
+   "te_win": 46.8,
+   "te_pf": 1.8,
+   "te_net": 249748.0
+  },
+  {
+   "test": "CE only: skip when delivery % rank < 30%",
+   "tr_n": 119,
+   "tr_win": 54.6,
+   "tr_pf": 2.45,
+   "tr_net": 334681.0,
+   "te_n": 166,
+   "te_win": 48.2,
+   "te_pf": 1.94,
+   "te_net": 378241.0
+  }
+ ],
+ "verdict": {
+  "A": [
+   {
+    "test": "keep 20d delivery % rank \u2265 50%",
+    "keep": false
+   },
+   {
+    "test": "keep 20d delivery % rank \u2265 30%",
+    "keep": false
+   },
+   {
+    "test": "keep delivery qty trend (20d/60d) \u2265 1",
+    "keep": false
+   },
+   {
+    "test": "keep accumulation days (20d) \u2265 40%",
+    "keep": false
+   },
+   {
+    "test": "top-6 momentum re-ranked by delivery rank",
+    "keep": false
+   },
+   {
+    "test": "rank by momentum \u00d7 (0.5 + delivery rank)",
+    "keep": false
+   }
+  ],
+  "B": [
+   {
+    "test": "delivery \u2265 2\u00d7 \u00b7 rr 1.5\u00d7ATR \u00b7 \u226415d",
+    "keep": false
+   },
+   {
+    "test": "delivery \u2265 2\u00d7 \u00b7 rr 2.0\u00d7ATR \u00b7 \u226420d",
+    "keep": false
+   },
+   {
+    "test": "delivery \u2265 2\u00d7 \u00b7 trail 2.0\u00d7ATR \u00b7 \u226430d",
+    "keep": false
+   },
+   {
+    "test": "delivery \u2265 3\u00d7 \u00b7 rr 1.5\u00d7ATR \u00b7 \u226415d",
+    "keep": false
+   },
+   {
+    "test": "delivery \u2265 3\u00d7 \u00b7 rr 2.0\u00d7ATR \u00b7 \u226420d",
+    "keep": false
+   },
+   {
+    "test": "delivery \u2265 3\u00d7 \u00b7 trail 2.0\u00d7ATR \u00b7 \u226430d",
+    "keep": false
+   }
+  ],
+  "C": [
+   {
+    "test": "skip when delivery trend disagrees (CE needs 20d/60d \u2265 1, PE \u2264 1)",
+    "keep": false
+   },
+   {
+    "test": "skip when accumulation disagrees (CE needs \u2265 40%, PE \u2264 60%)",
+    "keep": false
+   },
+   {
+    "test": "CE only: skip when delivery % rank < 30%",
+    "keep": false
+   }
+  ]
+ }
+}

@@ -533,6 +533,10 @@ footer .sig b { color: var(--accent); font-weight: 700; }
       <div class="newsbox"><h3 id="stChartTitle">Chart</h3><div id="stChart" style="height:320px"></div><p class="sub" id="stChartInfo"></p></div>
       <div class="newsbox" id="stNews"><h3>News</h3></div>
     </div>
+    <h3 class="subh">Big-news moves · last session <span class="sub">gap ≥ 3% or move ≥ 4% on ≥ 3× volume · information only: trading them lost money after costs</span></h3>
+    <div class="scroll"><table id="stNewsDays"></table></div>
+    <h3 class="subh">Big money in our shares · last session <span class="sub" id="stDealsHint">NSE bulk / block deals · information only</span></h3>
+    <div class="scroll"><table id="stDeals"></table></div>
     <h3 class="subh">How it was tested</h3>
     <div class="callout" id="stCallout"></div>
     <div class="scroll"><table id="stYears" class="cmp"></table></div>
@@ -1234,13 +1238,24 @@ function renderStocks() {
     (pos.map(p => { const now = p.live ?? p.last, pnl = p.live_pnl ?? p.pnl;
       return `<tr data-sym="${esc(p.sym)}" class="click"><td><b>${esc(p.sym)}</b></td><td class="mono">${p.shares}</td><td class="mono">${esc(p.entry_day)}</td><td class="mono">₹${fmt(p.entry)}</td><td class="mono neg-t">${p.stop ? "₹" + fmt(p.stop) : "–"}</td><td class="sub">top-${v.params.max_pos} rule</td><td class="mono">₹${fmt(now)}</td><td class="mono">${inr(now * p.shares)}</td><td class="mono ${cls(pnl)}">${inr(pnl)} (${pctTxt(100 * pnl / p.cost)})</td><td class="mono">day ${p.days} · 1–3 mo</td></tr>`; }).join("")
      || `<tr><td colspan="10" class="sub">No holdings yet${(v.orders || []).length ? ": the calls above are bought at the next open" : ""}.</td></tr>`) + `</tbody>`;
-  $("stRank").innerHTML = `<thead><tr><th>#</th><th>Share</th><th>Close</th><th>Live</th><th>12-month momentum</th><th>Status</th></tr></thead><tbody>` +
-    (v.ranking || []).map(x => `<tr data-sym="${esc(x.sym)}" class="click${S.stSym === x.sym ? " on" : ""}"><td class="mono">${x.rank}</td><td><b>${esc(x.sym)}</b></td><td class="mono">₹${fmt(x.ref)}</td><td class="mono">${lp(x.sym) ? "₹" + fmt(lp(x.sym)) : "–"}</td><td class="mono pos-t">${pctTxt(x.mom)}</td><td>${x.held ? '<span class="st won">held</span>' : x.pick ? '<span class="st open">top 3 · buy</span>' : '<span class="sub">watch</span>'}</td></tr>`).join("") + `</tbody>`;
+  $("stRank").innerHTML = `<thead><tr><th>#</th><th>Share</th><th>Close</th><th>Live</th><th>12-month momentum</th><th title="share of traded volume taken as delivery, and where it sits in its own last year (0–100)">Delivery % · rank</th><th>Status</th></tr></thead><tbody>` +
+    (v.ranking || []).map(x => `<tr data-sym="${esc(x.sym)}" class="click${S.stSym === x.sym ? " on" : ""}"><td class="mono">${x.rank}</td><td><b>${esc(x.sym)}</b></td><td class="mono">₹${fmt(x.ref)}</td><td class="mono">${lp(x.sym) ? "₹" + fmt(lp(x.sym)) : "–"}</td><td class="mono pos-t">${pctTxt(x.mom)}</td><td class="mono">${x.deliv && x.deliv.deliv_pct != null ? fmt(x.deliv.deliv_pct, 1) + "% · " + fmt(100 * (x.deliv.deliv_rank ?? 0), 0) + (x.deliv.accum ? ' <span class="st won" title="price up and delivery above its 60-day average">accum.</span>' : "") : "–"}</td><td>${x.held ? '<span class="st won">held</span>' : x.pick ? '<span class="st open">top 3 · buy</span>' : '<span class="sub">watch</span>'}</td></tr>`).join("") + `</tbody>`;
   document.querySelectorAll("#stRank tr[data-sym], #stPos tr[data-sym]").forEach(r => r.onclick = () => selectStock(r.dataset.sym));
+  const nd = v.news_days || [];
+  $("stNewsDays").innerHTML = `<thead><tr><th>Share</th><th>Type</th><th>Move</th><th>Volume</th><th>Headlines</th></tr></thead><tbody>` +
+    (nd.map(e => `<tr data-sym="${esc(e.sym)}" class="click"><td><b>${esc(e.sym)}</b></td><td>${esc(e.type)}</td><td class="mono ${cls(e.move)}">${pctTxt(e.move)}</td><td class="mono">${e.vol_mult != null ? fmt(e.vol_mult, 1) + "×" : "–"}</td>
+      <td style="white-space:normal;min-width:260px">${(e.news || []).slice(0, 2).map(x => `<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a>`).join("<br>") || '<span class="sub">no headline found</span>'}</td></tr>`).join("")
+     || `<tr><td colspan="5" class="sub">No big-news move in our shares in the last session.</td></tr>`) + `</tbody>`;
+  document.querySelectorAll("#stNewsDays tr[data-sym]").forEach(r => r.onclick = () => selectStock(r.dataset.sym));
+  const dl = v.deals || {}, drows = dl.rows || [];
+  $("stDealsHint").textContent = `NSE bulk / block deals${dl.day ? " of " + dl.day : ""} in the Nifty 50 + F&O shares · information only (no free history to test yet; collected daily from now)`;
+  $("stDeals").innerHTML = `<thead><tr><th>Type</th><th>Share</th><th>Buyer / seller</th><th>Side</th><th>Quantity</th><th>Price</th></tr></thead><tbody>` +
+    (drows.map(d => `<tr><td>${esc(d.kind)}</td><td><b>${esc(d.sym)}</b></td><td>${esc(d.client)}</td><td class="${/BUY/.test(d.side) ? "pos-t" : "neg-t"}">${esc(d.side)}</td><td class="mono">${fmt(+d.qty, 0)}</td><td class="mono">₹${fmt(+d.price)}</td></tr>`).join("")
+     || `<tr><td colspan="6" class="sub">No bulk / block deal in our shares in the last session.</td></tr>`) + `</tbody>`;
   const R = v.research || {};
   $("stCallout").innerHTML = `<b>Rule:</b> every ${v.params.freq} trading days hold the ${v.params.max_pos} large-cap shares (Nifty 50 + 20 F&amp;O stocks) with the strongest return from 12 months ago to 1 month ago, only shares above their 200-day EMA, and only while Nifty is above its own 200-day EMA (otherwise sell everything and wait in cash). No stop loss: ${esc(v.rule)}.<br>
     <b>Tested</b> on real daily prices with delivery charges and slippage, settings chosen on 2019–23 and judged on 2024–26: ${r0.te_n ?? "–"} trades, ${fmt(r0.te_win, 0)}% winners, PF ${fmt(r0.te_pf)}, ${fmt(r0.te_cagr, 1)}%/yr, worst drop ${fmt(r0.te_maxdd, 0)}% (2019–23: PF ${fmt(r0.tr_pf)}, ${fmt(r0.tr_cagr, 1)}%/yr).
-    Pullback (RSI 2) and breakout rules were tested too and <b>lost money</b> after charges. <b>Be aware:</b> most of the gain came in 2021 and 2024; it trailed Nifty in 4 of 8 years; the share list is today's Nifty 50, which flatters the past.`;
+    Pullback (RSI 2) and breakout rules were tested too and <b>lost money</b> after charges. Delivery % (NSE, since Oct 2019) was tested as a filter, a ranking boost and its own signal: <b>none improved both periods</b>, so it is shown for information only. Big-news days (large gaps / moves on heavy volume) were tested intraday and swing: <b>all lost after costs</b>, so they are shown with their headlines as context only. <b>Be aware:</b> most of the gain came in 2021 and 2024; it trailed Nifty in 4 of 8 years; the share list is today's Nifty 50, which flatters the past.`;
   const yr = R.yearly || {}, ny = R.nifty_yearly || {}, years = Object.keys(yr).sort();
   $("stYears").innerHTML = years.length ? `<thead><tr><th>Year</th>${years.map(y => `<th>${esc(y)}</th>`).join("")}</tr></thead><tbody>
     <tr><td>Momentum (₹20k)</td>${years.map(y => `<td class="mono ${cls(yrVal(yr[y]))}">${pctTxt(yrVal(yr[y]))}</td>`).join("")}</tr>
