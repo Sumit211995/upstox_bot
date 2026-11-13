@@ -109,6 +109,17 @@ def option_positions(accounts, mark):
     return out
 
 
+def once(send, today, key, msg):
+    """Send `msg` at most once per day for `key` (survives restarts). Returns True if sent."""
+    seen = _seen(today)
+    if key in seen or not msg:
+        return False
+    seen.add(key)
+    _remember(today, seen)
+    send(msg)
+    return True
+
+
 def every(name, seconds):
     """True at most once per `seconds` for this name (simple in-process throttle)."""
     now = time.time()

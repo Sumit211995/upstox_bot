@@ -25,6 +25,7 @@ import engine
 import live
 import market
 import recorder
+import stock_bot
 import swing_bot
 from config import HERE, load_config
 from notifier import send
@@ -171,6 +172,13 @@ def live_extras(cfg, now):
     except Exception:
         log.exception("morning calls failed")
     try:
+        if now.hour * 100 + now.minute >= 915:
+            orders = stock_bot.morning_orders()
+            if orders:
+                alerts.once(say, now.date(), "stock-morning", stock_bot.calls_text(orders, "today's open"))
+    except Exception:
+        log.exception("stock morning calls failed")
+    try:
         if alerts.every("watch-options", 60):
             alerts.watch(say, now.date(), alerts.option_positions(accounts, live.mark))
     except Exception:
@@ -189,6 +197,18 @@ def day_summary(cfg, today):
         send(cfg, "🇮🇳 PAPER day summary " + today.strftime("%d %b") + "\n" + "\n".join(lines))
 
 
+def stock_job(cfg, today):
+    """Stocks tab (share momentum, paper): once a day when the day's share prices are in. Never blocks the options job."""
+    if getattr(stock_job, "done", None) == today:
+        return
+    try:
+        v = stock_bot.run(notify=lambda text: send(cfg, text))
+        if v.get("asof") == today.isoformat():
+            stock_job.done = today
+    except Exception:
+        log.exception("stock job failed")
+
+
 def evening_job(cfg, now, done):
     """Option-BUYING books: once a day after NSE publishes its F&O file (from 18:15 IST, retry every 15 min until
     23:45). Returns the date it is finished for (today's file processed, or given up for a holiday)."""
@@ -199,6 +219,7 @@ def evening_job(cfg, now, done):
         return done
     evening_job.last_try = time.time()
     try:
+        stock_job(cfg, now.date())
         last = swing_bot.run(cfg)
         if last == now.date():
             return now.date()
@@ -252,6 +273,7 @@ def main():
             swing_bot.run(cfg)                                 # catch up the buying books at start-up
         except Exception:
             log.exception("start-up evening job failed")
+        stock_job(cfg, now_ist().date())
     while True:
         try:
             now = now_ist()

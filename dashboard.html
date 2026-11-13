@@ -359,7 +359,7 @@ footer .sig b { color: var(--accent); font-weight: 700; }
 .book .note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.45; }
 .scan-grid { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr); gap: 16px; }
 @media (max-width: 1100px) { .scan-grid { grid-template-columns: minmax(0, 1fr); } }
-#sTbl tbody tr { cursor: pointer; } #sTbl tbody tr.on td { background: var(--surface-2); }
+#sTbl tbody tr { cursor: pointer; } #sTbl tbody tr.on td { background: var(--surface-2); } #stRank tbody tr, #stPos tbody tr { cursor: pointer; } #stRank tbody tr.on td { background: var(--surface-2); }
 .oibar { display: inline-flex; width: 90px; height: 6px; border-radius: 4px; overflow: hidden; vertical-align: middle; margin-right: 6px; background: var(--down-soft); }
 .oibar i { display: block; height: 100%; background: var(--up); }
 .sig { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
@@ -452,7 +452,7 @@ footer .sig b { color: var(--accent); font-weight: 700; }
 <div class="wrap">
   <nav class="tabsnav" id="tabsnav" role="tablist">
     <button data-tab="overview" class="on">Overview</button><button data-tab="buying">Buying · all signals</button>
-    <button data-tab="selling">Selling</button><button data-tab="bigmoney">Big money</button><button data-tab="news">News &amp; TV</button>
+    <button data-tab="selling">Selling</button><button data-tab="stocks">Stocks · shares</button><button data-tab="bigmoney">Big money</button><button data-tab="news">News &amp; TV</button>
   </nav>
   <div data-tab="overview" class="tabsec">
   <div class="tickers" id="tickers"></div>
@@ -511,6 +511,26 @@ footer .sig b { color: var(--accent); font-weight: 700; }
     <div class="filters" id="bFilters"></div>
     <div class="scroll"><table id="bTbl"></table></div>
     <div class="pager" id="bPager"></div>
+  </div>
+
+  <div class="panel section tabsec" data-tab="stocks" style="--i:3" id="stPanel">
+    <div class="ph"><h2>Stocks · share swing trading (paper)</h2><span class="hint" id="stHint">12-month momentum · decided each evening · bought at the next 09:15 open · paper only</span></div>
+    <div class="kpis" id="stKpis"></div>
+    <h3 class="subh">Calls for the next open <span class="sub">also sent to Telegram in the evening and again at 09:15</span></h3>
+    <div id="stOrders"></div>
+    <h3 class="subh">Holdings <span class="sub" id="stHoldHint"></span></h3>
+    <div class="scroll"><table id="stPos"></table></div>
+    <h3 class="subh">Momentum ranking · today <span class="sub">tap a share for its chart and news · the top 3 are what the account holds</span></h3>
+    <div class="scroll"><table id="stRank"></table></div>
+    <div class="scan-grid news-grid" style="margin-top:14px">
+      <div class="newsbox"><h3 id="stChartTitle">Chart</h3><div id="stChart" style="height:320px"></div><p class="sub" id="stChartInfo"></p></div>
+      <div class="newsbox" id="stNews"><h3>News</h3></div>
+    </div>
+    <h3 class="subh">How it was tested</h3>
+    <div class="callout" id="stCallout"></div>
+    <div class="scroll"><table id="stYears" class="cmp"></table></div>
+    <h3 class="subh">Closed trades</h3>
+    <div class="scroll"><table id="stClosed"></table></div>
   </div>
 
   <div class="panel section tabsec" data-tab="bigmoney" style="--i:3" id="bmPanel">
@@ -1143,6 +1163,83 @@ async function pullBigMoney() { try { S.bm = await getJSON("/api/bigmoney"); ren
 async function pullBuying() { try { const first = !S.b; S.b = await getJSON("/api/buying"); renderBuying(); renderSignals(); if (first) { renderChartFilters(); renderSide(); loadChart(false); } } catch (e) {} setTimeout(pullBuying, S.ov && S.ov.market.open ? 10000 : 60000); }
 async function pullScan() { try { S.sc = await getJSON("/api/scan"); renderScan(); renderSignals(); } catch (e) {} setTimeout(pullScan, 120000); }
 
+/* ---------- stocks tab ---------- */
+let stChart = null, stCandle = null, stE50 = null, stE200 = null;
+function pctTxt(x) { return x == null ? "–" : (x > 0 ? "+" : "") + fmt(x, 1) + "%"; }
+function yrVal(o) { return o == null ? null : typeof o === "object" ? (o.ret ?? o.return ?? o.pct ?? null) : o; }
+function renderStocks() {
+  const v = S.st;
+  if (!v || !v.ready) { $("stKpis").innerHTML = `<div class="sub">The stock account fills after the first evening run (from 18:15).</div>`; return; }
+  const m = v.market || {}, live = v.live || {}, open = S.ov && S.ov.market.open, pos = v.positions || [];
+  const lp = s => live[s] ? live[s].last : null;
+  const livePnl = pos.reduce((a, p) => a + (p.live_pnl ?? p.pnl ?? 0), 0);
+  const eq = pos.some(p => p.live) ? v.cash + pos.reduce((a, p) => a + (p.live ? p.live * p.shares : p.value), 0) : v.equity;
+  const r0 = ((v.research || {}).rows || [])[0] || {};
+  $("stHint").textContent = `data up to ${v.asof} · next rebalance in ${v.next_rebalance_in} trading day(s) · paper only`;
+  $("stKpis").innerHTML = `
+    <div class="kpi"><div class="k">Account (start ${inr(v.capital)})</div><div class="v mono ${cls(eq - v.capital)}">${inr(eq)}</div><div class="s">${pctTxt(100 * (eq / v.capital - 1))} · cash ${inr(v.cash)}</div></div>
+    <div class="kpi"><div class="k">Holdings P&amp;L${open ? " (live)" : ""}</div><div class="v mono ${cls(livePnl)}">${inr(livePnl)}</div><div class="s">${pos.length} of ${v.params.max_pos} slots used</div></div>
+    <div class="kpi"><div class="k">Market filter</div><div class="v ${m.nifty_up ? "pos-t" : "neg-t"}">${m.nifty_up ? "Buying allowed" : "Stay in cash"}</div><div class="s">Nifty ${m.nifty_up ? "above" : "below"} its 200-day EMA</div></div>
+    <div class="kpi"><div class="k">Next rebalance</div><div class="v mono">${v.next_rebalance_in} day(s)</div><div class="s">every ${v.params.freq} trading days</div></div>
+    <div class="kpi"><div class="k">Tested 2024–26 (unseen)</div><div class="v mono">${r0.te_cagr != null ? fmt(r0.te_cagr, 1) + "%/yr" : "–"}</div><div class="s">${r0.te_pf != null ? "PF " + fmt(r0.te_pf) + " · worst drop " + fmt(r0.te_maxdd, 0) + "%" : ""}</div></div>`;
+  $("stOrders").innerHTML = (v.orders || []).length ? `<div class="sigstrip">` + v.orders.map((o, i) => `<div class="panel scard ${o.side === "BUY" ? "buy" : "sell"}" style="--i:${i}">
+      <div class="t1"><span class="st ${o.side === "BUY" ? "won" : "lost"}">${o.side}</span> next open</div>
+      <div class="t2"><b>${esc(o.sym)}</b> <span class="mono">${o.ref ? "ref ₹" + fmt(o.ref) : ""}${lp(o.sym) ? " · now ₹" + fmt(lp(o.sym)) : ""}</span></div>
+      <div class="t3">${esc(o.why || o.reason || "")}</div></div>`).join("") + `</div>`
+    : `<div class="panel scard wait"><div class="t2">No stock call for the next open</div><div class="t3">The account only trades on rebalance days (every ${v.params.freq} trading days) or when the market filter changes.</div></div>`;
+  $("stHoldHint").textContent = pos.some(p => p.live) ? "live prices from Upstox" : "prices at the last close";
+  $("stPos").innerHTML = `<thead><tr><th>Share</th><th>Shares</th><th>Bought</th><th>Entry</th><th>Now</th><th>Value</th><th>P&amp;L</th><th>Days</th></tr></thead><tbody>` +
+    (pos.map(p => { const now = p.live ?? p.last, pnl = p.live_pnl ?? p.pnl;
+      return `<tr data-sym="${esc(p.sym)}" class="click"><td><b>${esc(p.sym)}</b></td><td class="mono">${p.shares}</td><td class="mono">${esc(p.entry_day)}</td><td class="mono">₹${fmt(p.entry)}</td><td class="mono">₹${fmt(now)}</td><td class="mono">${inr(now * p.shares)}</td><td class="mono ${cls(pnl)}">${inr(pnl)} (${pctTxt(100 * pnl / p.cost)})</td><td class="mono">${p.days}</td></tr>`; }).join("")
+     || `<tr><td colspan="8" class="sub">No holdings yet${(v.orders || []).length ? ": the calls above are bought at the next open" : ""}.</td></tr>`) + `</tbody>`;
+  $("stRank").innerHTML = `<thead><tr><th>#</th><th>Share</th><th>Close</th><th>Live</th><th>12-month momentum</th><th>Status</th></tr></thead><tbody>` +
+    (v.ranking || []).map(x => `<tr data-sym="${esc(x.sym)}" class="click${S.stSym === x.sym ? " on" : ""}"><td class="mono">${x.rank}</td><td><b>${esc(x.sym)}</b></td><td class="mono">₹${fmt(x.ref)}</td><td class="mono">${lp(x.sym) ? "₹" + fmt(lp(x.sym)) : "–"}</td><td class="mono pos-t">${pctTxt(x.mom)}</td><td>${x.held ? '<span class="st won">held</span>' : x.pick ? '<span class="st open">top 3 · buy</span>' : '<span class="sub">watch</span>'}</td></tr>`).join("") + `</tbody>`;
+  document.querySelectorAll("#stRank tr[data-sym], #stPos tr[data-sym]").forEach(r => r.onclick = () => selectStock(r.dataset.sym));
+  const R = v.research || {};
+  $("stCallout").innerHTML = `<b>Rule:</b> every ${v.params.freq} trading days hold the ${v.params.max_pos} large-cap shares (Nifty 50 + 20 F&amp;O stocks) with the strongest return from 12 months ago to 1 month ago, only shares above their 200-day EMA, and only while Nifty is above its own 200-day EMA (otherwise sell everything and wait in cash). No stop loss: ${esc(v.rule)}.<br>
+    <b>Tested</b> on real daily prices with delivery charges and slippage, settings chosen on 2019–23 and judged on 2024–26: ${r0.te_n ?? "–"} trades, ${fmt(r0.te_win, 0)}% winners, PF ${fmt(r0.te_pf)}, ${fmt(r0.te_cagr, 1)}%/yr, worst drop ${fmt(r0.te_maxdd, 0)}% (2019–23: PF ${fmt(r0.tr_pf)}, ${fmt(r0.tr_cagr, 1)}%/yr).
+    Pullback (RSI 2) and breakout rules were tested too and <b>lost money</b> after charges. <b>Be aware:</b> most of the gain came in 2021 and 2024; it trailed Nifty in 4 of 8 years; the share list is today's Nifty 50, which flatters the past.`;
+  const yr = R.yearly || {}, ny = R.nifty_yearly || {}, years = Object.keys(yr).sort();
+  $("stYears").innerHTML = years.length ? `<thead><tr><th>Year</th>${years.map(y => `<th>${esc(y)}</th>`).join("")}</tr></thead><tbody>
+    <tr><td>Momentum (₹20k)</td>${years.map(y => `<td class="mono ${cls(yrVal(yr[y]))}">${pctTxt(yrVal(yr[y]))}</td>`).join("")}</tr>
+    <tr><td>Nifty 50</td>${years.map(y => `<td class="mono ${cls(yrVal(ny[y]))}">${pctTxt(yrVal(ny[y]))}</td>`).join("")}</tr></tbody>` : "";
+  $("stClosed").innerHTML = `<thead><tr><th>Share</th><th>Bought</th><th>Sold</th><th>Entry</th><th>Exit</th><th>Shares</th><th>P&amp;L</th><th>Why sold</th></tr></thead><tbody>` +
+    ((v.closed || []).slice(0, 60).map(t => `<tr><td><b>${esc(t.sym)}</b></td><td class="mono">${esc(t.entry_day)}</td><td class="mono">${esc(t.exit_day)}</td><td class="mono">₹${fmt(t.entry)}</td><td class="mono">₹${fmt(t.exit)}</td><td class="mono">${t.shares}</td><td class="mono ${cls(t.pnl)}">${inr(t.pnl)} (${pctTxt(100 * t.ret)})</td><td>${esc(t.reason)}</td></tr>`).join("")
+     || `<tr><td colspan="8" class="sub">No closed trades yet.</td></tr>`) + `</tbody>`;
+  if (!S.stSym && (v.ranking || []).length) selectStock((pos[0] || v.ranking[0]).sym);
+}
+async function selectStock(sym) {
+  S.stSym = sym;
+  document.querySelectorAll("#stRank tr[data-sym]").forEach(r => r.classList.toggle("on", r.dataset.sym === sym));
+  $("stChartTitle").textContent = sym + " · daily";
+  if (!stChart && window.LightweightCharts) {
+    const el = $("stChart");
+    stChart = LightweightCharts.createChart(el, { ...chartOpts(el), timeScale: { borderColor: css("--border"), timeVisible: false, rightOffset: 4 } });
+    stCandle = stChart.addCandlestickSeries({ borderVisible: false, upColor: css("--up"), downColor: css("--down"), wickUpColor: css("--up"), wickDownColor: css("--down") });
+    stE50 = stChart.addLineSeries({ lineWidth: 2, color: css("--ema50"), priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+    stE200 = stChart.addLineSeries({ lineWidth: 2, color: css("--ema200"), priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+    new ResizeObserver(() => stChart.applyOptions({ width: el.clientWidth })).observe(el);
+  }
+  try {
+    const d = await getJSON("/api/stockchart?sym=" + encodeURIComponent(sym));
+    if (S.stSym !== sym || !stChart) return;
+    stCandle.setData(d.candles); stE50.setData(d.ema50.filter(x => x.value !== null)); stE200.setData(d.ema200.filter(x => x.value !== null));
+    const mk = [];
+    (d.trades || []).forEach(t => {
+      mk.push({ time: t.entry_day, position: "belowBar", color: css("--up"), shape: "arrowUp", text: "BUY" });
+      if (t.exit_day) mk.push({ time: t.exit_day, position: "aboveBar", color: t.pnl >= 0 ? css("--up") : css("--down"), shape: "arrowDown", text: "SELL" });
+    });
+    stCandle.setMarkers(mk.sort((a, b) => a.time < b.time ? -1 : 1));
+    stChart.timeScale().fitContent();
+    $("stChartInfo").textContent = "2 years of daily candles · EMA 50 and EMA 200 lines · arrows = this account's paper buys / sells";
+  } catch (e) { $("stChartInfo").textContent = "Chart unavailable: " + e.message; }
+  const cachedNews = ((S.st || {}).news || {})[sym];
+  const draw = items => { $("stNews").innerHTML = `<h3>${esc(sym)} news</h3><ul>` + (items.length ? items.map(x => `<li><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.title)}</a><small>${esc(x.source)}${x.ts ? " · " + ist(x.ts) : ""}</small></li>`).join("") : `<li class="sub">No headlines right now.</li>`) + `</ul>`; };
+  if (cachedNews && cachedNews.length) draw(cachedNews);
+  else { try { const n = await getJSON("/api/news?sym=" + encodeURIComponent(sym)); if (S.stSym === sym) draw(n.items || []); } catch (e) { draw([]); } }
+}
+async function pullStocks() { try { S.st = await getJSON("/api/stocks"); if (S.tab === "stocks") renderStocks(); } catch (e) {} setTimeout(pullStocks, S.ov && S.ov.market.open ? 15000 : 120000); }
+
 /* ---------- tabs ---------- */
 function setTab(t) {
   S.tab = t; storeSet("utab", t); try { history.replaceState(null, "", "#" + t); } catch (e) {}
@@ -1158,6 +1255,7 @@ function setTab(t) {
     S.tf = "15m"; S.range = "1M"; buildSeg("tfSeg", ["5m", "15m", "1h", "1D"], S.tf, setTf); buildSeg("rangeSeg", ["1D", "1W", "1M", "3M", "1Y", "ALL"], S.range, setRange);
   }
   S.prevTab = t;
+  if (t === "stocks") renderStocks();
   if (slot) { renderChartFilters(); renderSide(); if (chart) setTimeout(() => { chart.applyOptions({ width: $("chart").clientWidth }); loadChart(false); }, 30); }
 }
 document.querySelectorAll("#tabsnav button").forEach(b => b.onclick = () => { setTab(b.dataset.tab); window.scrollTo({ top: 0 }); });
@@ -1205,8 +1303,8 @@ setInterval(() => { if (S.ov && S.ov.market.open) loadChart(false); }, 60000);  
 
 skel("tickers", 5, 118); skel("today", 2, 140); skel("books", 3, 120); skelRows("jTbl", 4); skel("hGrid", 4, 150); skelRows("hTbl", 8); skelRows("rTbl", 6);
 initChart();
-pullOverview().then(() => { pullQuotes().then(pullLive); pullPaper(); pullResearch(); pullHistory(); pullBuying(); pullScan(); pullBigMoney(); loadNews(); pullTv(); });
-const TABS = ["overview", "buying", "selling", "bigmoney", "news"], hashTab = location.hash.slice(1);
+pullOverview().then(() => { pullQuotes().then(pullLive); pullPaper(); pullResearch(); pullHistory(); pullBuying(); pullScan(); pullBigMoney(); loadNews(); pullTv(); pullStocks(); });
+const TABS = ["overview", "buying", "selling", "stocks", "bigmoney", "news"], hashTab = location.hash.slice(1);
 setTab(TABS.includes(hashTab) ? hashTab : TABS.includes(storeGet("utab")) ? storeGet("utab") : "overview");
 setInterval(loadNews, 600000);
 </script>

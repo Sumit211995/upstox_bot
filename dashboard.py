@@ -19,6 +19,7 @@ import engine
 import market
 import live
 import news
+import stocks
 import swing_bot
 from config import HERE, load_config
 
@@ -283,6 +284,56 @@ def research():
 
 
 # ------------------------------------------------------------------ option BUYING books (evening job output)
+# ------------------------------------------------------------------ stocks tab (share momentum, paper)
+def stocks_view():
+    """state/stocks.json (written each evening by stock_bot) + live share prices during market hours."""
+    v = _jread(HERE / "state" / "stocks.json", {})
+    if not v:
+        return dict(ready=False)
+    v["ready"], v["live"] = True, None
+    if market_state()["open"]:
+        syms = sorted({p["sym"] for p in v.get("positions", [])} | {x["sym"] for x in v.get("ranking", [])}
+                      | {o["sym"] for o in v.get("orders", [])})
+        try:
+            km = cached("stock-keys", 3600, stocks.keys)
+            q = live.quotes([km[s] for s in syms if s in km]) or {}
+            inv = {km[s]: s for s in syms if s in km}
+            v["live"] = {inv[k]: x for k, x in q.items() if k in inv}
+        except Exception:
+            v["live"] = None
+        if v["live"]:
+            for p in v.get("positions", []):
+                x = v["live"].get(p["sym"])
+                if x:
+                    p["live"] = x["last"]
+                    p["live_pnl"] = round(x["last"] * p["shares"] - p["cost"], 2)
+    return v
+
+
+def stock_chart(sym):
+    """Daily candles (2 years), EMA 50 / 200 and this share's paper buys / sells."""
+    if sym not in stocks.UNIVERSE:
+        return dict(error="unknown symbol")
+
+    def load():
+        df = stocks.candles(sym, refresh=False)
+        if df is None or df.empty:
+            return dict(sym=sym, candles=[])
+        df = stocks.adjust(sym, df).tail(520)
+        c = df["close"]
+        e50, e200 = engine.ema(c, 50), engine.ema(c, 200)
+        day = [str(d) for d in df["day"]]
+        return dict(sym=sym, candles=[dict(time=d, open=num(o), high=num(h), low=num(l), close=num(x))
+                                      for d, o, h, l, x in zip(day, df["open"], df["high"], df["low"], c)],
+                    ema50=[dict(time=d, value=num(v)) for d, v in zip(day, e50)],
+                    ema200=[dict(time=d, value=num(v)) for d, v in zip(day, e200)])
+    out = dict(cached(f"stockchart|{sym}", 600, load))
+    v = _jread(HERE / "state" / "stocks.json", {})
+    out["trades"] = [t for t in v.get("closed", []) if t.get("sym") == sym] + \
+                    [dict(p, open=True) for p in v.get("positions", []) if p.get("sym") == sym]
+    return out
+
+
 def _jread(path, default):
     try:
         return json.loads(Path(path).read_text())
@@ -402,6 +453,7 @@ class Handler(BaseHTTPRequestHandler):
                       "/api/overview": overview, "/api/quotes": quotes, "/api/paper": paper,
                       "/api/history": strategy_history, "/api/research": research,
                       "/api/buying": buying, "/api/scan": scanner, "/api/bigmoney": bigmoney,
+                      "/api/stocks": stocks_view, "/api/stockchart": lambda: stock_chart(q.get("sym", "")),
                       "/api/channels": lambda: channel_news(q.get("src", "all")),
                       "/api/livetv": lambda: cached("livetv", 300, news.live_tv),
                       "/api/news": lambda: headlines(q.get("sym", "_market")),
