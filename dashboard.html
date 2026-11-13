@@ -482,6 +482,7 @@ footer .sig b { color: var(--accent); font-weight: 700; }
         <span class="chart-px mono" id="cPx">–</span>
         <span id="cChg"></span>
         <span class="spacer"></span>
+        <div class="seg" id="ixSeg" title="Index shown in the chart"><span class="thumb"></span></div>
         <div class="seg" id="rangeSeg"><span class="thumb"></span></div>
         <div class="seg" id="tfSeg"><span class="thumb"></span></div>
       </div>
@@ -635,9 +636,9 @@ function skel(id, n, h, o = {}) {
 function skelRows(id, rows) { $(id).innerHTML = `<tbody>${Array.from({ length: rows }, () => `<tr><td colspan="9"><div class="sk line"></div></td></tr>`).join("")}</tbody>`; }
 async function getJSON(u) { const r = await fetch(u); const d = await r.json(); if (d && d.error && !Array.isArray(d)) throw new Error(d.error); return d; }
 function moveThumb(seg) { const on = seg.querySelector("button.on"), th = seg.querySelector(".thumb"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; } }
-function buildSeg(id, items, cur, onPick) {
+function buildSeg(id, items, cur, onPick, labels) {
   const seg = $(id);
-  seg.innerHTML = `<span class="thumb"></span>` + items.map(x => `<button data-v="${x}" class="${x === cur ? "on" : ""}">${x}</button>`).join("");
+  seg.innerHTML = `<span class="thumb"></span>` + items.map(x => `<button data-v="${x}" class="${x === cur ? "on" : ""}">${labels && labels[x] || x}</button>`).join("");
   seg.querySelectorAll("button").forEach(b => b.onclick = () => onPick(b.dataset.v));
   requestAnimationFrame(() => moveThumb(seg));
 }
@@ -790,9 +791,17 @@ async function loadChart(showSkel) {
   } catch (e) { $("ohlc").textContent = "Chart error: " + e.message; }
   finally { $("chartBox").classList.remove("loading"); }
 }
+// index switch in the chart header (the index tiles are only on the Overview tab)
+const IX_LABEL = { NIFTY: "Nifty", BANKNIFTY: "Bank Nifty", SENSEX: "Sensex", MIDCPNIFTY: "Midcap" };
+function buildIx() {
+  const all = ((S.q || []).map(q => q.name).filter(n => n !== "VIX"));
+  const items = S.tab === "buying" ? ["NIFTY", "BANKNIFTY"] : (all.length ? all : Object.keys(IX_LABEL));
+  if ($("ixSeg")) buildSeg("ixSeg", items, S.ix, select, IX_LABEL);
+}
 function select(ix) {
   if (!ix) return;
   const ch = ix !== S.ix; S.ix = ix; storeSet("uix", ix);
+  buildIx();
   $("cTitle").textContent = (S.q && (S.q.find(q => q.name === ix) || {}).label) || ix;
   renderTickers(); renderSide(); renderChartFilters();
   if (ch) loadChart(true);
@@ -1288,6 +1297,7 @@ function setTab(t) {
     S.tf = "15m"; S.range = "1M"; buildSeg("tfSeg", ["5m", "15m", "1h", "1D"], S.tf, setTf); buildSeg("rangeSeg", ["1D", "1W", "1M", "3M", "1Y", "ALL"], S.range, setRange);
   }
   S.prevTab = t;
+  buildIx();
   if (t === "stocks") renderStocks();
   if (slot) { renderChartFilters(); renderSide(); if (chart) setTimeout(() => { chart.applyOptions({ width: $("chart").clientWidth }); loadChart(false); }, 30); }
 }
