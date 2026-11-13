@@ -77,6 +77,21 @@ def keys(max_age_h=24):
     return out
 
 
+def names(max_age_h=72):
+    """Company short names for the news search ("TITAN" → "Titan Company"), from the Upstox instrument file."""
+    path = market.DATA / "eq_names.json"
+    if path.exists() and time.time() - path.stat().st_mtime < max_age_h * 3600:
+        return json.loads(path.read_text())
+    raw = market._session.get("https://assets.upstox.com/market-quote/instruments/exchange/NSE.json.gz", timeout=60)
+    raw.raise_for_status()
+    out = {x["trading_symbol"]: (x.get("short_name") or x.get("name") or x["trading_symbol"]).strip()
+           for x in json.load(gzip.open(io.BytesIO(raw.content)))
+           if x.get("instrument_type") == "EQ" and x.get("segment") == "NSE_EQ" and x.get("trading_symbol") in UNIVERSE}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(out))
+    return out
+
+
 def _fetch_days(key, a, b):
     """Daily candles (with volume) between two dates; one request per ~year."""
     parts, cur = [], a

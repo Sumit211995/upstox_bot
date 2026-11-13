@@ -1175,18 +1175,18 @@ function renderStocks() {
   const livePnl = pos.reduce((a, p) => a + (p.live_pnl ?? p.pnl ?? 0), 0);
   const eq = pos.some(p => p.live) ? v.cash + pos.reduce((a, p) => a + (p.live ? p.live * p.shares : p.value), 0) : v.equity;
   const r0 = ((v.research || {}).rows || [])[0] || {};
-  $("stHint").textContent = `data up to ${v.asof} · next rebalance in ${v.next_rebalance_in} trading day(s) · paper only`;
+  $("stHint").textContent = `data up to ${v.asof} · next decision ${v.next_rebalance_in ? "in " + v.next_rebalance_in + " trading day(s)" : "tonight"} · paper only`;
   $("stKpis").innerHTML = `
     <div class="kpi"><div class="k">Account (start ${inr(v.capital)})</div><div class="v mono ${cls(eq - v.capital)}">${inr(eq)}</div><div class="s">${pctTxt(100 * (eq / v.capital - 1))} · cash ${inr(v.cash)}</div></div>
     <div class="kpi"><div class="k">Holdings P&amp;L${open ? " (live)" : ""}</div><div class="v mono ${cls(livePnl)}">${inr(livePnl)}</div><div class="s">${pos.length} of ${v.params.max_pos} slots used</div></div>
     <div class="kpi"><div class="k">Market filter</div><div class="v ${m.nifty_up ? "pos-t" : "neg-t"}">${m.nifty_up ? "Buying allowed" : "Stay in cash"}</div><div class="s">Nifty ${m.nifty_up ? "above" : "below"} its 200-day EMA</div></div>
-    <div class="kpi"><div class="k">Next rebalance</div><div class="v mono">${v.next_rebalance_in} day(s)</div><div class="s">every ${v.params.freq} trading days</div></div>
+    <div class="kpi"><div class="k">Next decision</div><div class="v mono">${v.next_rebalance_in ? v.next_rebalance_in + " day(s)" : "tonight"}</div><div class="s">${v.next_rebalance_in ? "" : "after the close · "}every ${v.params.freq} trading days</div></div>
     <div class="kpi"><div class="k">Tested 2024–26 (unseen)</div><div class="v mono">${r0.te_cagr != null ? fmt(r0.te_cagr, 1) + "%/yr" : "–"}</div><div class="s">${r0.te_pf != null ? "PF " + fmt(r0.te_pf) + " · worst drop " + fmt(r0.te_maxdd, 0) + "%" : ""}</div></div>`;
   $("stOrders").innerHTML = (v.orders || []).length ? `<div class="sigstrip">` + v.orders.map((o, i) => `<div class="panel scard ${o.side === "BUY" ? "buy" : "sell"}" style="--i:${i}">
       <div class="t1"><span class="st ${o.side === "BUY" ? "won" : "lost"}">${o.side}</span> next open</div>
       <div class="t2"><b>${esc(o.sym)}</b> <span class="mono">${o.ref ? "ref ₹" + fmt(o.ref) : ""}${lp(o.sym) ? " · now ₹" + fmt(lp(o.sym)) : ""}</span></div>
       <div class="t3">${esc(o.why || o.reason || "")}</div></div>`).join("") + `</div>`
-    : `<div class="panel scard wait"><div class="t2">No stock call for the next open</div><div class="t3">The account only trades on rebalance days (every ${v.params.freq} trading days) or when the market filter changes.</div></div>`;
+    : `<div class="panel scard wait"><div class="t2">No stock call for the next open</div><div class="t3">${v.next_rebalance_in ? `The account trades only on decision days (every ${v.params.freq} trading days, next in ${v.next_rebalance_in}).` : "Next decision tonight after the close: the calls appear here and on Telegram, to buy at the next 09:15 open."}</div></div>`;
   $("stHoldHint").textContent = pos.some(p => p.live) ? "live prices from Upstox" : "prices at the last close";
   $("stPos").innerHTML = `<thead><tr><th>Share</th><th>Shares</th><th>Bought</th><th>Entry</th><th>Now</th><th>Value</th><th>P&amp;L</th><th>Days</th></tr></thead><tbody>` +
     (pos.map(p => { const now = p.live ?? p.last, pnl = p.live_pnl ?? p.pnl;

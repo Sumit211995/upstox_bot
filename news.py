@@ -83,13 +83,14 @@ def _fetch(url):
     return out
 
 
-def headlines(sym="_market", limit=12, ttl=600):
-    """Latest headlines for an index / stock symbol (or the whole market), newest first. Cached 10 minutes."""
+def headlines(sym="_market", limit=12, ttl=600, name=None):
+    """Latest headlines for an index / stock symbol (or the whole market), newest first. Cached 10 minutes.
+    `name` = the company's name ("Titan Company"): searched in quotes so "TITAN" does not match Titan Mining."""
     hit = _cache.get(sym)
     if hit and time.time() - hit[0] < ttl:
         return hit[1]
-    urls = FEEDS.get(sym) or [f"https://news.google.com/rss/search?q={quote_plus(QUERY.get(sym, sym) + ' share price when:3d')}"
-                              f"&hl=en-IN&gl=IN&ceid=IN:en"]
+    q = f'"{name}" share when:5d' if name else QUERY.get(sym, sym) + " share price when:3d"
+    urls = FEEDS.get(sym) or [f"https://news.google.com/rss/search?q={quote_plus(q)}&hl=en-IN&gl=IN&ceid=IN:en"]
     items = []
     for u in urls:
         try:
@@ -103,9 +104,9 @@ def headlines(sym="_market", limit=12, ttl=600):
             seen.add(k)
             out.append(x)
     if sym != "_market":                                   # drop headlines that only matched loosely
-        keys = ALIASES.get(sym) or [QUERY.get(sym, sym).split()[0].lower()]
+        keys = [name.lower()] if name else ALIASES.get(sym) or [QUERY.get(sym, sym).split()[0].lower()]
         rel = [x for x in out if any(k in x["title"].lower() for k in keys)]
-        out = rel if len(rel) >= 3 else out
+        out = rel if (len(rel) >= 3 or name) else out          # with a company name: only real matches
     out = out[:limit]
     _cache[sym] = (time.time(), out)
     return out

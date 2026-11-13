@@ -310,6 +310,15 @@ def stocks_view():
     return v
 
 
+def stock_news(sym):
+    """Headlines for one share, searched by its company name."""
+    try:
+        name = cached("stock-names", 3600, stocks.names).get(sym)
+    except Exception:
+        name = None
+    return headlines(sym, name=name)
+
+
 def stock_chart(sym):
     """Daily candles (2 years), EMA 50 / 200 and this share's paper buys / sells."""
     if sym not in stocks.UNIVERSE:
@@ -382,9 +391,9 @@ def scanner():
     return cached("scan", 30, lambda: _jread(HERE / "state" / "oi_scan.json", {}))
 
 
-def headlines(sym):
-    sym = sym if sym in news.QUERY or sym == "_market" else "_market"
-    h = news.headlines(sym)
+def headlines(sym, name=None):
+    sym = sym if sym in news.QUERY or sym in stocks.UNIVERSE or sym == "_market" else "_market"
+    h = news.headlines(sym, name=name)
     return dict(sym=sym, items=h, mood=dict(score=sum(x["mood"] for x in h),
                                             label=("positive" if sum(x["mood"] for x in h) >= 2 else
                                                    "negative" if sum(x["mood"] for x in h) <= -2 else "neutral")))
@@ -456,7 +465,8 @@ class Handler(BaseHTTPRequestHandler):
                       "/api/stocks": stocks_view, "/api/stockchart": lambda: stock_chart(q.get("sym", "")),
                       "/api/channels": lambda: channel_news(q.get("src", "all")),
                       "/api/livetv": lambda: cached("livetv", 300, news.live_tv),
-                      "/api/news": lambda: headlines(q.get("sym", "_market")),
+                      "/api/news": lambda: (stock_news(q["sym"]) if q.get("sym") in stocks.UNIVERSE
+                                            else headlines(q.get("sym", "_market"))),
                       "/api/chart": lambda: chart(q.get("index") if q.get("index") in CFG.indices else CFG.indices[0],
                                                   q.get("tf") if q.get("tf") in TF_MIN else "15m",
                                                   q.get("range") if q.get("range") in RANGE_DAYS else "1M")}

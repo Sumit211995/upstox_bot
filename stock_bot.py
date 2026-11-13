@@ -59,7 +59,14 @@ def calls_text(orders, when="tomorrow's open"):
 def run(notify=None, today=None):
     """Evening job. Returns the view dict written to state/stocks.json."""
     prep = stocks.build(refresh=True)
-    st = _load() or stocks.new_account(CAPITAL)
+    st = _load()
+    if st is None:
+        st = stocks.new_account(CAPITAL)
+        last = prep["days"][-1]
+        if (today or datetime.now(stocks.market.IST).date()) > last:
+            # started during the day (today's prices not in yet): begin AFTER the last finished day, so the first
+            # decision is made on today's close and bought at the next open, never at an open that already passed
+            st["asof"] = last
     st, events = stocks.paper_step(st, today=today, prep=prep)
     STATE.mkdir(exist_ok=True)
     ACCT.write_bytes(pickle.dumps(st))
@@ -71,10 +78,14 @@ def run(notify=None, today=None):
     for i, x in enumerate(ranked):
         x["rank"], x["held"], x["pick"] = i + 1, x["sym"] in held, i < st["params"]["max_pos"]
     heads = {}
+    try:
+        names = stocks.names()
+    except Exception:
+        names = {}
     for s in [x["sym"] for x in ranked[:5]] + sorted(held):
         if s not in heads:
             try:
-                heads[s] = news.headlines(s, limit=4)
+                heads[s] = news.headlines(s, limit=4, name=names.get(s))
             except Exception:
                 heads[s] = []
     positions = []
